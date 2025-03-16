@@ -41,6 +41,19 @@ public class ProductService : IProductService
         }
     }
 
+    public async Task<Product?> GetByNameAsync(string name)
+    {
+        try
+        {
+            return await _unitOfWork.Products.GetByNameAsync(name);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error fetching product with name {name}");
+            return null;
+        }
+    }
+
     public async Task<bool> CreateAsync(Product product)
     {
         try
@@ -52,6 +65,21 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating product");
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdateAsync(Product product)
+    {
+        try
+        {
+            await _unitOfWork.Products.UpdateAsync(product);
+            await _unitOfWork.SaveAsync(); 
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product");
             return false;
         }
     }

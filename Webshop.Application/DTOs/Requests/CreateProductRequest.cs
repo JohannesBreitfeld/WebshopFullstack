@@ -1,14 +1,15 @@
-﻿using Webshop.Domain.Enums;
+﻿using System.Text.Json.Serialization;
+using Webshop.Domain.Enums;
 
-namespace Webshop.Domain.Entities;
+namespace Webshop.Application.DTOs.Requests;
 
-public class Product
+public class CreateProductRequest
 {
-    public int Id { get; set; }
     public string Name { get; set; } = String.Empty;
     public double Price { get; set; }
     public string Description { get; set; } = String.Empty;
     public int StockBalance { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))] 
     public ProductStatus Status { get; set; } = ProductStatus.Active;
-    public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 }
