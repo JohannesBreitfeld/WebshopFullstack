@@ -10,5 +10,7 @@ public class Product
     public string Description { get; set; } = String.Empty;
     public int StockBalance { get; set; }
     public ProductStatus Status { get; set; } = ProductStatus.Active;
+    public int ProductCategoryId { get; set; }
+    public ProductCategory ProductCategory { get; set; } = null!;
     public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 }

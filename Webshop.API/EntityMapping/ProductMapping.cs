@@ -14,7 +14,8 @@ public static class ProductMapping
             Price = request.Price,
             Description = request.Description,
             StockBalance = request.StockBalance,
-            Status = request.Status
+            Status = request.Status,
+            ProductCategoryId = request.ProductCategoryId
         };
     }
 
@@ -26,7 +27,8 @@ public static class ProductMapping
             Name = product.Name,
             Description = product.Description,
             StockBalance = product.StockBalance,
-            Status = product.Status
+            Status = product.Status,
+            ProductCategoryId = product.ProductCategoryId
         };
     }
 
@@ -47,7 +49,8 @@ public static class ProductMapping
             Price = request.Price,
             Description = request.Description,
             StockBalance = request.StockBalance,
-            Status = request.Status
+            Status = request.Status,
+            ProductCategoryId = request.ProductCategoryId
         };
     }
 
