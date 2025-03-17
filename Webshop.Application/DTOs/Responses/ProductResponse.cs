@@ -10,7 +10,8 @@ public class ProductResponse
     public double Price { get; set; }
     public string Description { get; set; } = String.Empty;
     public int StockBalance { get; set; }
-    
+    public int ProductCategoryId { get; set; }
+
     [JsonConverter(typeof(JsonStringEnumConverter))] 
     public ProductStatus Status { get; set; }
 }
