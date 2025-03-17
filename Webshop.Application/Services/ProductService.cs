@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Webshop.Application.ServiceInterfaces;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 

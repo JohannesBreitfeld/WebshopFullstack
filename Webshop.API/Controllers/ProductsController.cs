@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Webshop.API.EntityMapping;
 using Webshop.Application.DTOs.Requests;
-using Webshop.Application.Services;
+using Webshop.Application.ServiceInterfaces;
 
 namespace Webshop.API.Controllers;
 
