@@ -26,9 +26,22 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var product = await _service.GetByIdAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        var response = product.MapToResponse();
+        return Ok(response);
+    }
+
+    [HttpGet("name/{name}")]
+    public async Task<IActionResult> GetByName(string name)
+    {
+        var product = await _service.GetByNameAsync(name);
         if (product == null)
         {
             return NotFound();
@@ -51,7 +64,7 @@ public class ProductsController : ControllerBase
 
         var response = product.MapToResponse();
 
-        return CreatedAtAction(nameof(Get), new { id = product.Id }, response);
+        return CreatedAtAction(nameof(GetByName), new { id = product.Id }, response);
     }
 
     [HttpPut("{id}")]
