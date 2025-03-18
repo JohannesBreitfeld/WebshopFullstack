@@ -6,12 +6,15 @@ namespace Webshop.Infrastructure.UnitOfWork;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-    public IProductRepository Products { get; }
 
-    public UnitOfWork(AppDbContext context, IProductRepository productRepository)
+    public IProductRepository Products { get; }
+    public IProductCategoryRepository ProductCategories { get; }
+
+    public UnitOfWork(AppDbContext context, IProductRepository productRepository, IProductCategoryRepository productCategoryRepository)
     {
         _context = context;
         Products = productRepository;
+        ProductCategories = productCategoryRepository;
     }
 
     public async Task<int> SaveAsync()

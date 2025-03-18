@@ -86,7 +86,8 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
-        var success = await _service.DeleteProductAsync(id);
+        var success = await _service.DeleteAsync(id);
+
         if (!success)
         {
             return NotFound(new { message = "Product not found" });
