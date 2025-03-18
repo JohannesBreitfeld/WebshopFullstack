@@ -86,6 +86,7 @@ public class ProductService : IProductService
     }
 
     public async Task<bool> DeleteAsync(int id)
+
     {
         try
         {    
@@ -96,7 +97,9 @@ public class ProductService : IProductService
             }
 
             await _unitOfWork.Products.DeleteAsync(product);
+
             await _unitOfWork.SaveAsync();
+
             return true;
         }
         catch(Exception ex)

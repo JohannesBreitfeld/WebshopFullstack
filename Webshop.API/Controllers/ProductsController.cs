@@ -87,6 +87,7 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> DeleteProduct(int id)
     {
         var success = await _service.DeleteAsync(id);
+
         if (!success)
         {
             return NotFound(new { message = "Product not found" });
