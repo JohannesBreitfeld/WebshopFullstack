@@ -9,6 +9,6 @@ public interface IProductRepository
     Task<Product?> GetByNameAsync(string name);
     Task AddAsync(Product product);
     Task UpdateAsync(Product product);
-
+    Task DeleteAsync(Product product);
     Task SaveAsync();
 }

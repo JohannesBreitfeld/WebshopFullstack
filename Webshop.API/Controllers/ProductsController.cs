@@ -2,6 +2,7 @@
 using Webshop.API.EntityMapping;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.ServiceInterfaces;
+using Webshop.Application.Services;
 
 namespace Webshop.API.Controllers;
 
@@ -59,7 +60,7 @@ public class ProductsController : ControllerBase
         var success = await _service.CreateAsync(product);
         if (!success)
         {
-            return BadRequest("Failed to create product");
+            return BadRequest(new { message = "Failed to create product" });
         }
 
         var response = product.MapToResponse();
@@ -80,5 +81,17 @@ public class ProductsController : ControllerBase
         var response = product.MapToResponse();
 
         return Ok(response);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var success = await _service.DeleteProductAsync(id);
+        if (!success)
+        {
+            return NotFound(new { message = "Product not found" });
+        }
+
+        return NoContent(); 
     }
 }

@@ -84,4 +84,24 @@ public class ProductService : IProductService
             return false;
         }
     }
+
+    public async Task<bool> DeleteProductAsync(int id)
+    {
+        try
+        {    
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product is null)
+            {
+                return false;
+            }
+
+            await _unitOfWork.Products.DeleteAsync(product);
+            return true;
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting product");
+            return false;
+        }
+    }
 }
