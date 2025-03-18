@@ -31,7 +31,7 @@ public static class ProductCategoryMapping
         };
     }
 
-    public static ProductCategory MapToProduct(this UpdateProductCategoryRequest request, int id)
+    public static ProductCategory MapToProductCategory(this UpdateProductCategoryRequest request, int id)
     {
         return new ProductCategory()
         {

@@ -80,13 +80,13 @@ public class ProductCategoryService : IProductCategoryService
     {
         try
         {
-            var productCategory = await _unitOfWork.Products.GetByIdAsync(id);
+            var productCategory = await _unitOfWork.ProductCategories.GetByIdAsync(id);
             if (productCategory is null)
             {
                 return false;
             }
 
-            await _unitOfWork.Products.DeleteAsync(productCategory);
+            _unitOfWork.ProductCategories.Delete(productCategory);
             await _unitOfWork.SaveAsync();
             return true;
         }
