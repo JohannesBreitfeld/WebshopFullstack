@@ -1,5 +1,6 @@
 using Fullstack.Persistance.Data;
 using Microsoft.EntityFrameworkCore;
+using Webshop.Application.ServiceInterfaces;
 using Webshop.Application.Services;
 using Webshop.Domain.Interfaces;
 using Webshop.Infrastructure.Repositories;

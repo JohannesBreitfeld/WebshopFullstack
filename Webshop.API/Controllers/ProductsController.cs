@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Webshop.API.EntityMapping;
 using Webshop.Application.DTOs.Requests;
+using Webshop.Application.ServiceInterfaces;
 using Webshop.Application.Services;
 
 namespace Webshop.API.Controllers;
@@ -26,9 +27,22 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var product = await _service.GetByIdAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        var response = product.MapToResponse();
+        return Ok(response);
+    }
+
+    [HttpGet("name/{name}")]
+    public async Task<IActionResult> GetByName(string name)
+    {
+        var product = await _service.GetByNameAsync(name);
         if (product == null)
         {
             return NotFound();
@@ -46,12 +60,12 @@ public class ProductsController : ControllerBase
         var success = await _service.CreateAsync(product);
         if (!success)
         {
-            return BadRequest("Failed to create product");
+            return BadRequest(new { message = "Failed to create product" });
         }
 
         var response = product.MapToResponse();
 
-        return CreatedAtAction(nameof(Get), new { id = product.Id }, response);
+        return CreatedAtAction(nameof(GetByName), new { id = product.Id }, response);
     }
 
     [HttpPut("{id}")]
@@ -67,5 +81,17 @@ public class ProductsController : ControllerBase
         var response = product.MapToResponse();
 
         return Ok(response);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        var success = await _service.DeleteProductAsync(id);
+        if (!success)
+        {
+            return NotFound(new { message = "Product not found" });
+        }
+
+        return NoContent(); 
     }
 }

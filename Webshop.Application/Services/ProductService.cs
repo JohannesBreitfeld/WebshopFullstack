@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Webshop.Application.ServiceInterfaces;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 
@@ -80,6 +81,26 @@ public class ProductService : IProductService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating product");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteProductAsync(int id)
+    {
+        try
+        {    
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product is null)
+            {
+                return false;
+            }
+
+            await _unitOfWork.Products.DeleteAsync(product);
+            return true;
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting product");
             return false;
         }
     }
