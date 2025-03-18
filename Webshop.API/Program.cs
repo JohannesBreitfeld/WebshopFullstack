@@ -17,6 +17,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Registrera Unit of Work och Repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Registrera Services

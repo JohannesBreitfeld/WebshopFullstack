@@ -33,6 +33,4 @@ public class ProductRepository : IProductRepository
         _context.Products.Remove(product);
         await Task.CompletedTask;
     }
-
-    public async Task SaveAsync() => await _context.SaveChangesAsync();
 }
