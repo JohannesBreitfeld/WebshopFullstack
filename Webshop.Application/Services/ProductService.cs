@@ -40,11 +40,7 @@ public class ProductService : IProductService
         try
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
-            if(product is null)
-            {
-                return null;
-            }
-            var response = product.MapToResponse();
+            var response = product?.MapToResponse();
 
             return response;
         }
@@ -60,11 +56,7 @@ public class ProductService : IProductService
         try
         {
             var product = await _unitOfWork.Products.GetByNameAsync(name);
-            if(product is null)
-            {
-                return null;
-            }
-            var response = product.MapToResponse();
+            var response = product?.MapToResponse();
            
             return response;
         }
@@ -100,7 +92,7 @@ public class ProductService : IProductService
         try
         {
             var product = request.MapToProduct(id);
-            await _unitOfWork.Products.UpdateAsync(product);
+            _unitOfWork.Products.Update(product);
             await _unitOfWork.SaveAsync();
             var response = product.MapToResponse();
 
@@ -124,7 +116,7 @@ public class ProductService : IProductService
                 return false;
             }
 
-            await _unitOfWork.Products.DeleteAsync(product);
+            _unitOfWork.Products.Delete(product);
 
             await _unitOfWork.SaveAsync();
 

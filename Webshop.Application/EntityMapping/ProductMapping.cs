@@ -25,6 +25,7 @@ public static class ProductMapping
         {
             Id = product.Id,
             Name = product.Name,
+            Price = product.Price,
             Description = product.Description,
             StockBalance = product.StockBalance,
             Status = product.Status,

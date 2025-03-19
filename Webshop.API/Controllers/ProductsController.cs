@@ -1,9 +1,6 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using Webshop.API.EntityMapping;
+﻿using Microsoft.AspNetCore.Mvc;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.ServiceInterfaces;
-using Webshop.Application.Services;
 
 namespace Webshop.API.Controllers;
 
@@ -51,7 +48,7 @@ public class ProductsController : ControllerBase
         var response = await _service.CreateAsync(request);
     
         return response is not null
-            ? CreatedAtAction(nameof(GetByName), new { id = response.Id }, response)
+            ? CreatedAtAction(nameof(GetById), new { id = response.Id }, response)
             : BadRequest(new { message = "Failed to create product" });
     }
 
