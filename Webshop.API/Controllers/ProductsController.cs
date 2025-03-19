@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Microsoft.AspNetCore.Mvc;
 using Webshop.API.EntityMapping;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.ServiceInterfaces;
@@ -20,79 +21,57 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await _service.GetAllAsync();
-        var response = products.MapToResponse();
-        
+        var response = await _service.GetAllAsync();
         return Ok(response);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromRoute]int id)
     {
-        var product = await _service.GetByIdAsync(id);
-        if (product == null)
-        {
-            return NotFound();
-        }
+        var response = await _service.GetByIdAsync(id);
 
-        var response = product.MapToResponse();
-        return Ok(response);
+        return response is not null
+            ? Ok(response)
+            : NotFound(new { message = $"Product with id {id} not found" }); 
     }
 
     [HttpGet("name/{name}")]
-    public async Task<IActionResult> GetByName(string name)
+    public async Task<IActionResult> GetByName([FromRoute]string name)
     {
-        var product = await _service.GetByNameAsync(name);
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        var response = product.MapToResponse();
-        return Ok(response);
+        var response = await _service.GetByNameAsync(name);
+        
+        return response is not null
+            ? Ok(response)
+            : NotFound(new { message = $"Product with name {name} not found" });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateProductRequest request)
+    public async Task<IActionResult> Create([FromBody]CreateProductRequest request)
     {
-        var product = request.MapToProduct();
-
-        var success = await _service.CreateAsync(product);
-        if (!success)
-        {
-            return BadRequest(new { message = "Failed to create product" });
-        }
-
-        var response = product.MapToResponse();
-
-        return CreatedAtAction(nameof(GetByName), new { id = product.Id }, response);
+        var response = await _service.CreateAsync(request);
+    
+        return response is not null
+            ? CreatedAtAction(nameof(GetByName), new { id = response.Id }, response)
+            : BadRequest(new { message = "Failed to create product" });
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProduct([FromRoute]int id, [FromBody]UpdateProductRequest request)
     {
-        var product = request.MapToProduct(id);
-
-        var result = await _service.UpdateAsync(product);
-        if (!result)
-        {
-            return NotFound(); 
-        }
-        var response = product.MapToResponse();
-
-        return Ok(response);
+        var response = await _service.UpdateAsync(id, request);
+       
+        return response is not null
+            ? Ok(response)
+            : NotFound(new { message = $"Product with id {id} not found" });
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProduct(int id)
+    public async Task<IActionResult> DeleteProduct([FromRoute]int id)
     {
         var success = await _service.DeleteAsync(id);
 
-        if (!success)
-        {
-            return NotFound(new { message = "Product not found" });
-        }
-
-        return NoContent(); 
+        return success is true
+            ? NoContent()
+            : NotFound(new { message = $"Product with id {id} not found" });
     }
 }
