@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Webshop.API.EntityMapping;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.ServiceInterfaces;
 
@@ -19,63 +18,47 @@ public class ProductCategoriesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var categories = await _service.GetAllAsync();
-        var response = categories.MapToResponse();
+        var response = await _service.GetAllAsync();
         return Ok(response);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById([FromRoute] int id)
     {
-        var category = await _service.GetByIdAsync(id);
-        if (category is null)
-        {
-            return NotFound(new { message = "Product category not found" });
-        }
-        var response = category.MapToResponse();
-
-        return Ok(response);
+        var response = await _service.GetByIdAsync(id);
+        
+        return response is not null
+            ? Ok(response)
+            : NotFound(new { message = $"Product category with id {id} not found" });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateProductCategoryRequest request)
+    public async Task<IActionResult> Create([FromBody]CreateProductCategoryRequest request)
     {
-        var productCategory = request.MapToProductCategory();
-
-        var success = await _service.CreateAsync(productCategory);
-        if (!success)
-        {
-            return BadRequest(new { message = "Failed to create product category" });
-        }
-
-        var response = productCategory.MapToResponse();
-
-        return CreatedAtAction(nameof(GetById), new { id = productCategory.Id }, response);
+        var response = await _service.CreateAsync(request);
+        
+        return response is not null
+            ? CreatedAtAction(nameof(GetById), new { id = response.Id }, response)
+            : BadRequest(new { message = "Failed to create product category" });
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateProductCategoryRequest request)
+    public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductCategoryRequest request)
     {
-        var productCategory = request.MapToProductCategory(id);
-        var success = await _service.UpdateAsync(productCategory);
-        if (!success)
-        {
-            return NotFound(new { message = "Category not found" });
-        }
-        var response = productCategory.MapToResponse();
-
-        return Ok(response);
+        var response = await _service.UpdateAsync(id, request);
+        
+        return response is not null
+            ? Ok(response)
+            : NotFound(new { message = $"Category with id {id} not found" });
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var success = await _service.DeleteAsync(id);
-        if (!success) 
-        { 
-            return NotFound(new { message = "Category not found" }); 
-        }
-
-        return NoContent();
+      
+        return success is true
+            ? NoContent()
+            : NotFound(new { message = $"Category with id {id} not found" });
     }
 }

@@ -1,13 +1,14 @@
-﻿using Webshop.Domain.Entities;
+﻿using Webshop.Application.DTOs.Requests;
+using Webshop.Application.DTOs.Responses;
 
 namespace Webshop.Application.ServiceInterfaces;
 
 public interface IProductService
 {
-    Task<IEnumerable<Product>> GetAllAsync();
-    Task<Product?> GetByIdAsync(int id);
-    Task<Product?> GetByNameAsync(string name);
-    Task<bool> CreateAsync(Product product);
-    Task<bool> UpdateAsync(Product product);
+    Task<ProductsResponse?> GetAllAsync();
+    Task<ProductResponse?> GetByIdAsync(int id);
+    Task<ProductResponse?> GetByNameAsync(string name);
+    Task<ProductResponse?> CreateAsync(CreateProductRequest request);
+    Task<ProductResponse?> UpdateAsync(int id, UpdateProductRequest request);
     Task<bool> DeleteAsync(int id);
 }

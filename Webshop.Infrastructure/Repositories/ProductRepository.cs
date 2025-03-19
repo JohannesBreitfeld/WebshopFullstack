@@ -22,15 +22,7 @@ public class ProductRepository : IProductRepository
 
     public async Task AddAsync(Product product) => await _context.Products.AddAsync(product);
 
-    public async Task UpdateAsync(Product product)
-    {
-        _context.Products.Update(product);
-        await Task.CompletedTask;
-    }
-
-    public async Task DeleteAsync(Product product)
-    {
-        _context.Products.Remove(product);
-        await Task.CompletedTask;
-    }
+    public void Update(Product product) => _context.Products.Update(product);
+    
+    public void Delete(Product product) => _context.Products.Remove(product);
 }

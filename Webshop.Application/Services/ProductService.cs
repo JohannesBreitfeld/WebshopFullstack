@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
+using Webshop.Application.DTOs.Requests;
+using Webshop.Application.DTOs.Responses;
+using Webshop.Application.EntityMapping;
 using Webshop.Application.ServiceInterfaces;
-using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 
 namespace Webshop.Application.Services;
@@ -16,24 +18,31 @@ public class ProductService : IProductService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
+    public async Task<ProductsResponse?> GetAllAsync()
     {
         try
         {
-            return await _unitOfWork.Products.GetAllAsync();
+            var products = await _unitOfWork.Products.GetAllAsync();
+            var response = products.MapToResponse();
+
+            return response;
+
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching products");
-            return Enumerable.Empty<Product>();
+            return null;
         }
     }
 
-    public async Task<Product?> GetByIdAsync(int id)
+    public async Task<ProductResponse?> GetByIdAsync(int id)
     {
         try
         {
-            return await _unitOfWork.Products.GetByIdAsync(id);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            var response = product?.MapToResponse();
+
+            return response;
         }
         catch (Exception ex)
         {
@@ -42,11 +51,14 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<Product?> GetByNameAsync(string name)
+    public async Task<ProductResponse?> GetByNameAsync(string name)
     {
         try
         {
-            return await _unitOfWork.Products.GetByNameAsync(name);
+            var product = await _unitOfWork.Products.GetByNameAsync(name);
+            var response = product?.MapToResponse();
+           
+            return response;
         }
         catch (Exception ex)
         {
@@ -55,33 +67,41 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<bool> CreateAsync(Product product)
+    public async Task<ProductResponse?> CreateAsync(CreateProductRequest request)
     {
         try
         {
+            var product = request.MapToProduct();
+
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.SaveAsync();
-            return true;
+
+            var response = product.MapToResponse();
+
+            return response;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating product");
-            return false;
+            return null;
         }
     }
 
-    public async Task<bool> UpdateAsync(Product product)
+    public async Task<ProductResponse?> UpdateAsync(int id, UpdateProductRequest request)
     {
         try
         {
-            await _unitOfWork.Products.UpdateAsync(product);
-            await _unitOfWork.SaveAsync(); 
-            return true;
+            var product = request.MapToProduct(id);
+            _unitOfWork.Products.Update(product);
+            await _unitOfWork.SaveAsync();
+            var response = product.MapToResponse();
+
+            return response;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating product");
-            return false;
+            return null;
         }
     }
 
@@ -96,7 +116,7 @@ public class ProductService : IProductService
                 return false;
             }
 
-            await _unitOfWork.Products.DeleteAsync(product);
+            _unitOfWork.Products.Delete(product);
 
             await _unitOfWork.SaveAsync();
 

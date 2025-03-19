@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.Responses;
+using Webshop.Application.EntityMapping;
 using Webshop.Application.ServiceInterfaces;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
@@ -18,61 +19,71 @@ public class ProductCategoryService : IProductCategoryService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<ProductCategory>> GetAllAsync()
+    public async Task<ProductCategoriesResponse?> GetAllAsync()
     {
         try
         {
-            return await _unitOfWork.ProductCategories.GetAllAsync();
+            var products = await _unitOfWork.ProductCategories.GetAllAsync();
+            var response = products.MapToResponse();
+            return response;
         }
         catch(Exception ex)
         {
             _logger.LogError(ex, "Error fetching products");
-            return Enumerable.Empty<ProductCategory>();
+            return null;
         }
         
     }
 
-    public async Task<ProductCategory?> GetByIdAsync(int id)
+    public async Task<ProductCategoryResponse?> GetByIdAsync(int id)
     {
         try
         { 
-            return await _unitOfWork.ProductCategories.GetByIdAsync(id); 
+            var product = await _unitOfWork.ProductCategories.GetByIdAsync(id);
+            var response = product?.MapToResponse();
+            return response;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error fetching ProductCategory with ID {id}");
             return null;
         }
-
     }
 
-    public async Task<bool> CreateAsync(ProductCategory productCategory)
+    public async Task<ProductCategoryResponse?> CreateAsync(CreateProductCategoryRequest request)
     {
         try
         {
+            var productCategory = request.MapToProductCategory();
+
             await _unitOfWork.ProductCategories.AddAsync(productCategory);
             await _unitOfWork.SaveAsync();
-            return true;
+
+            var response = productCategory.MapToResponse();
+            return response;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating productcategory");
-            return false;
+            return null;
         }
     }
 
-    public async Task<bool> UpdateAsync(ProductCategory productCategory)
+    public async Task<ProductCategoryResponse?> UpdateAsync(int id, UpdateProductCategoryRequest request)
     {
         try
         {
+            var productCategory = request.MapToProductCategory(id);
             _unitOfWork.ProductCategories.Update(productCategory);
             await _unitOfWork.SaveAsync();
-            return true;
+            var response = productCategory.MapToResponse();
+            
+            return response;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error updating ProductCategory");
-            return false;
+            return null;
         }
     }
 
