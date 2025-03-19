@@ -9,12 +9,14 @@ public class UnitOfWork : IUnitOfWork
 
     public IProductRepository Products { get; }
     public IProductCategoryRepository ProductCategories { get; }
+    public ICustomerRepository Customers { get; }
 
-    public UnitOfWork(AppDbContext context, IProductRepository productRepository, IProductCategoryRepository productCategoryRepository)
+    public UnitOfWork(AppDbContext context, IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, ICustomerRepository customerRepository)
     {
         _context = context;
         Products = productRepository;
         ProductCategories = productCategoryRepository;
+        Customers = customerRepository;
     }
 
     public async Task<int> SaveAsync()
