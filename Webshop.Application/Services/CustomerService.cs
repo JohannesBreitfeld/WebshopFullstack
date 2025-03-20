@@ -69,7 +69,7 @@ public class CustomerService : ICustomerService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting customer");
+            _logger.LogError(ex, "Error getting customers");
             return null;
         }
     }

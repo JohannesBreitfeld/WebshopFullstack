@@ -10,13 +10,20 @@ public class UnitOfWork : IUnitOfWork
     public IProductRepository Products { get; }
     public IProductCategoryRepository ProductCategories { get; }
     public ICustomerRepository Customers { get; }
+    public IOrderRepository Orders { get; }
 
-    public UnitOfWork(AppDbContext context, IProductRepository productRepository, IProductCategoryRepository productCategoryRepository, ICustomerRepository customerRepository)
+    public UnitOfWork(
+        AppDbContext context, 
+        IProductRepository productRepository, 
+        IProductCategoryRepository productCategoryRepository, 
+        ICustomerRepository customerRepository, 
+        IOrderRepository orderRepository)
     {
         _context = context;
         Products = productRepository;
         ProductCategories = productCategoryRepository;
         Customers = customerRepository;
+        Orders = orderRepository;
     }
 
     public async Task<int> SaveAsync()

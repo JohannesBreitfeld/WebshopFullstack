@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
-        public required Customer Customer { get; set; }
+        public Customer Customer { get; set; } = null!;
         public DateTime DateTime { get; set; }
         public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
     }
