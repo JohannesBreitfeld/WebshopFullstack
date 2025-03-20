@@ -32,7 +32,7 @@ public class ProductsController : ControllerBase
             : NotFound(new { message = $"Product with id {id} not found" }); 
     }
 
-    [HttpGet("name/{name}")]
+    [HttpGet("by-name/{name}")]
     public async Task<IActionResult> GetByName([FromRoute]string name)
     {
         var response = await _service.GetByNameAsync(name);

@@ -3,6 +3,7 @@ using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.Responses;
 using Webshop.Application.EntityMapping;
 using Webshop.Application.ServiceInterfaces;
+using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 
 namespace Webshop.Application.Services;
@@ -78,11 +79,37 @@ public class OrderService : IOrderService
 
     public async Task<OrdersResponse?> GetByCustomerIdAsync(int customerId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var orders = await _unitOfWork.Orders.GetByCustomerIdAsync(customerId);
+            var response = orders.MapToResponse();
+
+            return response;
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, $"Error fetching orders with customer id {customerId}");
+            return null;
+        }
     }
 
     public async Task<OrderResponse?> GetByOrderIdAsync(int orderId)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var order = await _unitOfWork.Orders.GetByOrderIdAsync(orderId);
+            if(order is null)
+            {
+                return null;
+            }
+            var response = order.MapToResponse();
+
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error fetching order with order id {orderId}");
+            return null;
+        }
     }
 }

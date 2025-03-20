@@ -33,6 +33,8 @@ public class OrderRepository : IOrderRepository
     public async Task<IEnumerable<Order>> GetByCustomerIdAsync(int customerId) 
     {
         return await _context.Orders
+            .Include(o => o.OrderProducts)
+            .ThenInclude(op => op.Product)
             .Where(o => o.CustomerId == customerId)
             .ToListAsync();
     }
