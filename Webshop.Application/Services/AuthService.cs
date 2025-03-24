@@ -50,17 +50,27 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(user, "Customer");
 
-        return new AuthResponse { Token = GenerateJwtToken(user, "Customer"), Role = "Customer" };
+        return new AuthResponse { Token = GenerateJwtToken(user, "Customer"), Role = "Customer", Customer = customer.MapToResponse() };
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginUserRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
-            return null;
+        { 
+            return null; 
+        }
 
         var roles = await _userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? "Customer";
+
+        if(user.CustomerId is not null)
+        {
+            var customer = await _unitOfWork.Customers.GetByIdAsync((int)user.CustomerId);
+            return customer is not null
+                ? new AuthResponse { Token = GenerateJwtToken(user, role), Role = role, Customer = customer.MapToResponse() }
+                : new AuthResponse { Token = GenerateJwtToken(user, role), Role = role };
+        }
 
         return new AuthResponse { Token = GenerateJwtToken(user, role), Role = role };
     }
