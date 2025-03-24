@@ -1,22 +1,68 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using Webshop.Application.DTOs.Responses
+@using Webshop.Presentation.Auth
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
-<MudPopoverProvider />
-<MudDialogProvider />
+
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" /> 
+<MudPopoverProvider /> 
+<MudDialogProvider /> 
 <MudSnackbarProvider />
+@* <MudLayout> *@
+@*     <MudAppBar Elevation="1"> *@
+@*         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> *@
+@*         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText> *@
+@*         <MudSpacer /> *@
+@*         <MudNavLink Href="/login"> *@
+@*             <MudIcon Icon="@Icons.Material.Filled.Person" /> *@
+@*             @if(role == "Admin")  *@
+@*             { *@
+@*                 <span>Inloggad som Admin</span> *@
+@*             } *@
+@*             else if(role == "Customer" && customerData is not null ) *@
+@*             { *@
+@*                 <span>Inloggad som @customerData.FirstName</span> *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 <span>Logga in</span> *@
+@*             } *@
+@*         </MudNavLink> *@
+@*         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" /> *@
+@*         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" /> *@
+@*     </MudAppBar> *@
+@*     <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2"> *@
+@*         <NavMenu /> *@
+@*     </MudDrawer> *@
+@*     <MudMainContent Class="mt-16 pa-4"> *@
+@*         @Body *@
+@*     </MudMainContent> *@
+@* </MudLayout> *@
+
+
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+    <MudAppBar Color="Color.Primary">
+        <MudIconButton OnClick="DrawerToggle" Icon="mdi-menu" Color="Color.Inherit" Class="d-md-none" />
+        <MudText Typo="Typo.h6">Min Webshop</MudText>
         <MudSpacer />
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+        <MudButton OnClick="GoToLogin" Color="Color.Secondary" Class="d-none d-md-flex">Logga in</MudButton>
     </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
+
+    <MudDrawer Open="@_drawerOpen" OnClose="CloseDrawer" Class="d-md-none" Anchor="Anchor.Left">
+        <MudNavMenu>
+            <MudNavLink OnClick="GoToHome">Hem</MudNavLink>
+            <MudNavLink OnClick="GoToProducts">Produkter</MudNavLink>
+            <MudNavLink OnClick="GoToLogin">Logga in</MudNavLink>
+        </MudNavMenu>
     </MudDrawer>
-    <MudMainContent Class="mt-16 pa-4">
-        @Body
+
+    <MudMainContent>
+        <MudContainer Class="mt-4">
+            @Body
+        </MudContainer>
     </MudMainContent>
 </MudLayout>
 
@@ -28,10 +74,29 @@
 </div>
 
 @code {
-    private bool _drawerOpen = true;
+    private bool _drawerOpen = false;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
+    private CustomerResponse? customerData;
+    private string? role;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+                customerData = await AuthStateProvider.GetCustomerDataAsync();
+            }
+
+            StateHasChanged();
+        }
+    }
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -92,6 +157,10 @@
         Divider = "#292838",
         OverlayLight = "#1e1e2d80",
     };
+
+    private void GoToLogin() => Navigation.NavigateTo("/login");
+    private void GoToHome() => Navigation.NavigateTo("/");
+    private void GoToProducts() => Navigation.NavigateTo("/products");
 
     public string DarkLightModeButtonIcon => _isDarkMode switch
     {

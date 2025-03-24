@@ -10,14 +10,16 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <MudTextField InputType="InputType.Email" @bind-Value="loginRequest.Email" Label="Username" Required="true" />
+    <MudTextField InputType="InputType.Email" @bind-Value="loginRequest.Email" Label="Username" Required="true" Class=""/>
     <MudTextField InputType="InputType.Password" @bind-Value="loginRequest.Password" Label="Password" Type="password" Required="true" />
 
-    <MudButton ButtonType="ButtonType.Submit" OnClick="HandleLogin">Log in</MudButton>
+    <MudButton Class="LoginButton" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="HandleLogin">Log in</MudButton>
 </EditForm>
+<p>@message</p>
 
 @code {
     private LoginUserRequest loginRequest = new LoginUserRequest();
+    private string message = "";
 
     private async Task HandleLogin()
     {
@@ -26,13 +28,17 @@
 
         if (response.IsSuccessStatusCode)
         {
-            var token = await response.Content.ReadAsStringAsync();
-            await AuthStateProvider.MarkUserAsAuthenticated(token);
-            Navigation.NavigateTo("/");
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+
+            if (authResponse is not null)
+            {
+                await AuthStateProvider.MarkUserAsAuthenticated(authResponse.Token, authResponse.Role, authResponse.Customer);
+                Navigation.NavigateTo("/");
+            }
         }
         else
         {
-            // Hantera fel
+            message = "Login failed";
         }
     }
 }
