@@ -1,0 +1,67 @@
+﻿@page "/shop"
+@using Webshop.Application.DTOs.Responses
+@inject IHttpClientFactory HttpClientFactory
+
+<MudContainer>
+    <MudGrid>
+        @foreach (var product in Products)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3" xl="3">
+                <MudCard>
+                    <MudCardMedia Image="@product.ImageUrl" Height="200" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@product.Name</MudText>
+                        <MudText Typo="Typo.subtitle1">Pris: @product.Price.ToString("C")</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Color="Color.Primary" OnClick="() => ToggleExpand(product)">Mer info</MudButton>
+                    </MudCardActions>
+                    <MudCollapse Expanded="@product.IsExpanded">
+                        <MudCardContent>
+                            <MudText>@product.Description</MudText>
+                        </MudCardContent>
+                    </MudCollapse>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private List<ProductModel> Products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = HttpClientFactory.CreateClient("API");
+        var productResponses = await client.GetFromJsonAsync<ProductsResponse>("api/Products");
+        if (productResponses is not null)
+        {
+            foreach (var response in productResponses.Items)
+            {
+                var productModel = new ProductModel()
+                    {
+                        Name = response.Name,
+                        Price = response.Price,
+                        Description = response.Description,
+                        ImageUrl = response.ImageUrl,
+                        IsExpanded = false
+                    };
+                Products.Add(productModel);
+            }
+        }
+    }
+
+    private void ToggleExpand(ProductModel product)
+    {
+        product.IsExpanded = !product.IsExpanded;
+    }
+
+    private class ProductModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public double Price { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
+        public bool IsExpanded { get; set; } = false;
+    }
+}

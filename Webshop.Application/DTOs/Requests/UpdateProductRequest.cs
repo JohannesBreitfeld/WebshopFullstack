@@ -5,11 +5,12 @@ namespace Webshop.Application.DTOs.Requests;
 
 public class UpdateProductRequest
 {
-    public string Name { get; set; } = String.Empty;
+    public string Name { get; set; } = string.Empty;
     public double Price { get; set; }
-    public string Description { get; set; } = String.Empty;
+    public string Description { get; set; } = string.Empty;
     public int StockBalance { get; set; }
     public int? ProductCategoryId { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ProductStatus Status { get; set; } = ProductStatus.Active;
