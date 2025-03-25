@@ -15,7 +15,8 @@ public static class ProductMapping
             Description = request.Description,
             StockBalance = request.StockBalance,
             Status = request.Status,
-            ProductCategoryId = request.ProductCategoryId
+            ProductCategoryId = request.ProductCategoryId,
+            ImageUrl = request.ImageUrl
         };
     }
 
@@ -29,7 +30,8 @@ public static class ProductMapping
             Description = product.Description,
             StockBalance = product.StockBalance,
             Status = product.Status,
-            ProductCategoryId = product.ProductCategoryId
+            ProductCategoryId = product.ProductCategoryId,
+            ImageUrl = product.ImageUrl
         };
     }
 
@@ -51,7 +53,8 @@ public static class ProductMapping
             Description = request.Description,
             StockBalance = request.StockBalance,
             Status = request.Status,
-            ProductCategoryId = request.ProductCategoryId
+            ProductCategoryId = request.ProductCategoryId,
+            ImageUrl = request.ImageUrl
         };
     }
 
