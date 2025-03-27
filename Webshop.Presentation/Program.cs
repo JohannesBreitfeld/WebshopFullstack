@@ -1,14 +1,17 @@
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using Webshop.Presentation.Auth;
 using Webshop.Presentation.Components;
+using Webshop.Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MudBlazor services
+// Add services
 builder.Services.AddMudServices();
+builder.Services.AddScoped<CartService>();
+builder.Services.AddBlazoredLocalStorage();
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

@@ -1,62 +1,109 @@
 ﻿@inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
-@using Webshop.Application.DTOs.Responses
-@using Webshop.Presentation.Auth
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject CartService CartService
+@inject IDialogService DialogService
 
-
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" /> 
+<MudThemeProvider Theme="@_theme" IsDarkMode="!_isDarkMode" /> 
 <MudPopoverProvider /> 
 <MudDialogProvider /> 
 <MudSnackbarProvider />
-@* <MudLayout> *@
-@*     <MudAppBar Elevation="1"> *@
-@*         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" /> *@
-@*         <MudText Typo="Typo.h5" Class="ml-3">Application</MudText> *@
-@*         <MudSpacer /> *@
-@*         <MudNavLink Href="/login"> *@
-@*             <MudIcon Icon="@Icons.Material.Filled.Person" /> *@
-@*             @if(role == "Admin")  *@
-@*             { *@
-@*                 <span>Inloggad som Admin</span> *@
-@*             } *@
-@*             else if(role == "Customer" && customerData is not null ) *@
-@*             { *@
-@*                 <span>Inloggad som @customerData.FirstName</span> *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 <span>Logga in</span> *@
-@*             } *@
-@*         </MudNavLink> *@
-@*         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" /> *@
-@*         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" /> *@
-@*     </MudAppBar> *@
-@*     <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2"> *@
-@*         <NavMenu /> *@
-@*     </MudDrawer> *@
-@*     <MudMainContent Class="mt-16 pa-4"> *@
-@*         @Body *@
-@*     </MudMainContent> *@
-@* </MudLayout> *@
-
 
 <MudLayout>
     <MudAppBar Color="Color.Primary">
-        <MudIconButton OnClick="DrawerToggle" Icon="mdi-menu" Color="Color.Inherit" Class="d-md-none" />
-        <MudText Typo="Typo.h6">Min Webshop</MudText>
+        <MudIconButton OnClick="DrawerToggle" Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Class="d-md-none" />
+        <MudText Typo="Typo.h6" Class="mr-4">Guns & Ammo</MudText>
+
+        <!-- Center Navigation Links -->
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudContainer MaxWidth="MaxWidth.False" Class="d-flex justify-center">
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Class="mx-auto">Hem</MudNavLink>
+                <MudNavLink Href="/shop" Match="NavLinkMatch.Prefix" Class="mx-auto">Shop</MudNavLink>
+                <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Class="mx-auto">Weather</MudNavLink>
+            </MudContainer>
+        </MudHidden>
+
         <MudSpacer />
-        <MudButton OnClick="GoToLogin" Color="Color.Secondary" Class="d-none d-md-flex">Logga in</MudButton>
+        @if(@role is not null)
+        {
+            if(role == "Admin")
+            {
+                <MudText>Inloggad som admin</MudText>
+            }
+            else if(@role == "Customer")
+            {
+                if(customerData is not null)
+                {
+                    <MudText>Inloggad som @customerData.FirstName @customerData.LastName</MudText>
+                }
+            }
+        }
+
+        <!-- Conditional Login/Logout Button -->
+        @if (isAuthenticated)
+        {
+            <MudButton Color="Color.Secondary" OnClick="@Logout" Class="d-none d-md-flex">
+                Logga ut
+            </MudButton>
+        }
+        else
+        {
+            <MudButton OnClick="GoToLogin" Color="Color.Secondary" Class="d-none d-md-flex">
+                Logga in
+            </MudButton>
+        }
+        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
+        OnClick="@ShowCart"
+        Color="Color.Inherit">
+            <MudBadge BadgeColor="Color.Secondary" Content="@CartService.Items.Count" />
+        </MudIconButton>
     </MudAppBar>
 
     <MudDrawer Open="@_drawerOpen" OnClose="CloseDrawer" Class="d-md-none" Anchor="Anchor.Left">
         <MudNavMenu>
-            <MudNavLink OnClick="GoToHome">Hem</MudNavLink>
-            <MudNavLink OnClick="GoToProducts">Produkter</MudNavLink>
-            <MudNavLink OnClick="GoToLogin">Logga in</MudNavLink>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+            <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
+            <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
+
+            <!-- Conditional Login/Logout Button in Drawer -->
+            @if (isAuthenticated)
+            {
+                <MudNavLink OnClick="@Logout" Icon="@Icons.Material.Filled.Logout">Logga ut</MudNavLink>
+            }
+            else
+            {
+                <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Login">Logga in</MudNavLink>
+            }
+            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
+            OnClick="@ShowCart"
+            Color="Color.Inherit">
+                <MudBadge BadgeColor="Color.Secondary" Content="@CartService.Items.Count" />
+            </MudIconButton>
         </MudNavMenu>
+    </MudDrawer>
+
+    <MudDrawer @bind-Open="_cartOpen" Anchor="Anchor.Right" Elevation="4" Width="300px" ClipMode="DrawerClipMode.Always">
+        <MudDrawerHeader>Kundvagn</MudDrawerHeader>
+        @if (CartService.Items.Any())
+        {
+            @foreach (var item in CartService.Items)
+            {
+                <MudPaper Class="p-2 mb-2">
+                    <MudText>@item.Name x @item.Quantity</MudText>
+                    <MudText Typo="Typo.caption">@($"{item.Price * item.Quantity:C}")</MudText>
+                </MudPaper>
+            }
+
+            <MudDivider Class="my-2" />
+            <MudText Typo="Typo.subtitle1">Totalt: @CartService.Total:C</MudText>
+            <MudButton Color="Color.Error" Variant="Variant.Outlined" Class="mt-2" OnClick="ClearCart">
+                Töm kundvagnen
+            </MudButton>
+        }
+        else
+        {
+            <MudText>Din kundvagn är tom.</MudText>
+        }
     </MudDrawer>
 
     <MudMainContent>
@@ -65,7 +112,6 @@
         </MudContainer>
     </MudMainContent>
 </MudLayout>
-
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -79,6 +125,8 @@
     private MudTheme? _theme = null;
     private CustomerResponse? customerData;
     private string? role;
+    private bool isAuthenticated = false;
+    private bool _cartOpen = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -89,22 +137,23 @@
 
             if (user.Identity != null && user.Identity.IsAuthenticated)
             {
+                isAuthenticated = true;
                 role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
                 customerData = await AuthStateProvider.GetCustomerDataAsync();
             }
+            base.OnInitialized();
+            await CartService.LoadCartAsync();
+            CartService.OnCartChanged += StateHasChanged;
 
             StateHasChanged();
         }
     }
-    
+
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
         _theme = new()
         {
             PaletteLight = _lightPalette,
-            PaletteDark = _darkPalette,
             LayoutProperties = new LayoutProperties()
         };
     }
@@ -112,6 +161,16 @@
     private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+        StateHasChanged();
+    }
+
+    private void ShowCart()
+    {
+        _cartOpen = !_cartOpen;
+    }
+    private async Task ClearCart()
+    {
+        await CartService.ClearCartAsync();
     }
 
     private void DarkModeToggle()
@@ -129,38 +188,15 @@
         GrayLighter = "#f9f9f9",
     };
 
-    private readonly PaletteDark _darkPalette = new()
+    private async Task Logout()
     {
-        Primary = "#7e6fff",
-        Surface = "#1e1e2d",
-        Background = "#1a1a27",
-        BackgroundGray = "#151521",
-        AppbarText = "#92929f",
-        AppbarBackground = "rgba(26,26,39,0.8)",
-        DrawerBackground = "#1a1a27",
-        ActionDefault = "#74718e",
-        ActionDisabled = "#9999994d",
-        ActionDisabledBackground = "#605f6d4d",
-        TextPrimary = "#b2b0bf",
-        TextSecondary = "#92929f",
-        TextDisabled = "#ffffff33",
-        DrawerIcon = "#92929f",
-        DrawerText = "#92929f",
-        GrayLight = "#2a2833",
-        GrayLighter = "#1e1e2d",
-        Info = "#4a86ff",
-        Success = "#3dcb6c",
-        Warning = "#ffb545",
-        Error = "#ff3f5f",
-        LinesDefault = "#33323e",
-        TableLines = "#33323e",
-        Divider = "#292838",
-        OverlayLight = "#1e1e2d80",
-    };
+        await AuthStateProvider.Logout();
+        StateHasChanged();
+    }
 
     private void GoToLogin() => Navigation.NavigateTo("/login");
     private void GoToHome() => Navigation.NavigateTo("/");
-    private void GoToProducts() => Navigation.NavigateTo("/products");
+
 
     public string DarkLightModeButtonIcon => _isDarkMode switch
     {
