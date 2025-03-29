@@ -1,19 +1,26 @@
 ﻿using Blazored.LocalStorage;
+using System.Net.Http;
+using Webshop.Application.DTOs.Requests;
+using Webshop.Application.DTOs.Responses;
+using Webshop.Domain.Entities;
+using Webshop.Presentation.Models;
 
 namespace Webshop.Presentation.Services;
 
 public class CartService
 {
     private readonly ILocalStorageService _localStorage;
+    private readonly IHttpClientFactory _httpClientFactory;
     private const string CartKey = "shopping_cart";
-    public decimal Total => Items.Sum(item => item.Price * item.Quantity);
+    public double Total => Items.Sum(item => item.Price * item.Quantity);
     public event Action OnCartChanged;
 
     public List<CartItem> Items { get; private set; } = new();
 
-    public CartService(ILocalStorageService localStorage)
+    public CartService(ILocalStorageService localStorage, IHttpClientFactory httpClientFactory)
     {
         _localStorage = localStorage;
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task LoadCartAsync()
@@ -22,9 +29,25 @@ public class CartService
         OnCartChanged?.Invoke();
     }
 
-    public async Task AddToCartAsync(CartItem item)
+    public async Task AddToCartAsync(ProductModel product)
     {
-        Items.Add(item);
+        var existingItem = Items.FirstOrDefault(i => i.Id == product.Id);
+
+        if (existingItem != null)
+        {
+            existingItem.Quantity++;
+        }
+        else
+        { 
+            Items.Add(new CartItem
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Quantity = 1
+            });
+        }
+
         await SaveCartAsync();
     }
 
@@ -46,12 +69,39 @@ public class CartService
         await _localStorage.RemoveItemAsync(CartKey);
         OnCartChanged?.Invoke();
     }
+
+    public async Task<bool> PlaceOrderAsync(int customerId, List<CartItem> products)
+    {
+        if (products.Count == 0)
+        {
+            return false;
+        }
+
+        var client = _httpClientFactory.CreateClient("API");
+
+        var customerResponse = await client.GetAsync($"api/customers/{customerId}");
+
+        if (!customerResponse.IsSuccessStatusCode)
+        {
+            return false; 
+        }
+
+        
+        var order = new CreateOrderRequest
+        {
+            CustomerId = customerId,
+            Products = products.Select(p => new CreateOrderProductRequest
+            {
+                ProductId = p.Id,
+                Quantity = p.Quantity
+            }).ToList()
+        };
+
+        var orderResponse = await client.PostAsJsonAsync("api/orders", order);
+
+        return orderResponse.IsSuccessStatusCode;
+    }
 }
 
-public class CartItem
-{
-    public string Name { get; set; }
-    public decimal Price { get; set; }
-    public int Quantity { get; set; }
-}
+
 

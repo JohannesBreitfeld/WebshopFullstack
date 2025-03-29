@@ -19,13 +19,11 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         _localStorage = localStorage;
     }
 
-    public async Task MarkUserAsAuthenticated(string token, string role, CustomerResponse? customer)
+    public async Task MarkUserAsAuthenticated(string token, CustomerResponse? customer)
     {
         Console.WriteLine($"Sparar token: {token}");
-        Console.WriteLine($"Sparar roll: {role}");
 
         await _localStorage.SetAsync("authToken", token);
-        await _localStorage.SetAsync("userRole", role);
 
         if (customer != null)
         {
@@ -34,16 +32,17 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             await _localStorage.SetAsync("customerData", customerJson);
         }
 
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        var authState = await GetAuthenticationStateAsync();
+        NotifyAuthenticationStateChanged(Task.FromResult(authState));
     }
 
     public async Task Logout()
     {
         await _localStorage.DeleteAsync("authToken");
-        await _localStorage.DeleteAsync("userRole");
         await _localStorage.DeleteAsync("customerData");
 
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        var authState = await GetAuthenticationStateAsync();
+        NotifyAuthenticationStateChanged(Task.FromResult(authState));
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()

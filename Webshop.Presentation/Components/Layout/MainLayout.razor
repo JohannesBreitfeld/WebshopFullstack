@@ -84,6 +84,7 @@
 
     <MudDrawer @bind-Open="_cartOpen" Anchor="Anchor.Right" Elevation="4" Width="300px" ClipMode="DrawerClipMode.Always">
         <MudDrawerHeader>Kundvagn</MudDrawerHeader>
+
         @if (CartService.Items.Any())
         {
             @foreach (var item in CartService.Items)
@@ -96,9 +97,26 @@
 
             <MudDivider Class="my-2" />
             <MudText Typo="Typo.subtitle1">Totalt: @CartService.Total:C</MudText>
+
             <MudButton Color="Color.Error" Variant="Variant.Outlined" Class="mt-2" OnClick="ClearCart">
                 Töm kundvagnen
             </MudButton>
+
+            <MudDivider Class="my-2" />
+
+            @if (isAuthenticated)
+            {
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="mt-2" OnClick="PlaceOrder">
+                    Slutför beställning
+                </MudButton>
+            }
+            else
+            {
+                <MudText Typo="Typo.body1" Class="mt-2">Du måste vara inloggad för att slutföra din order.</MudText>
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="GoToLogin">
+                    Logga in
+                </MudButton>
+            }
         }
         else
         {
@@ -191,11 +209,30 @@
     private async Task Logout()
     {
         await AuthStateProvider.Logout();
-        StateHasChanged();
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
     }
 
     private void GoToLogin() => Navigation.NavigateTo("/login");
     private void GoToHome() => Navigation.NavigateTo("/");
+
+    private async Task PlaceOrder()
+    {
+        if(customerData is null)
+        {
+            return;
+        }
+        if(CartService.Items is null || CartService.Items.Count == 0)
+        {
+            return;
+        }
+
+        var success = await CartService?.PlaceOrderAsync(customerData.Id, CartService.Items);
+
+        if (success)
+        {
+            await CartService.ClearCartAsync();
+        }
+    }
 
 
     public string DarkLightModeButtonIcon => _isDarkMode switch
