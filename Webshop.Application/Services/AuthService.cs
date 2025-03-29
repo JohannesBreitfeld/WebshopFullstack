@@ -50,7 +50,7 @@ public class AuthService : IAuthService
 
         await _userManager.AddToRoleAsync(user, "Customer");
 
-        return new AuthResponse { Token = GenerateJwtToken(user, "Customer"), Role = "Customer", Customer = customer.MapToResponse() };
+        return new AuthResponse { Token = GenerateJwtToken(user, "Customer"), Customer = customer.MapToResponse() };
     }
 
     public async Task<AuthResponse?> LoginAsync(LoginUserRequest request)
@@ -68,11 +68,11 @@ public class AuthService : IAuthService
         {
             var customer = await _unitOfWork.Customers.GetByIdAsync((int)user.CustomerId);
             return customer is not null
-                ? new AuthResponse { Token = GenerateJwtToken(user, role), Role = role, Customer = customer.MapToResponse() }
-                : new AuthResponse { Token = GenerateJwtToken(user, role), Role = role };
+                ? new AuthResponse { Token = GenerateJwtToken(user, role), Customer = customer.MapToResponse() }
+                : new AuthResponse { Token = GenerateJwtToken(user, role) };
         }
 
-        return new AuthResponse { Token = GenerateJwtToken(user, role), Role = role };
+        return new AuthResponse { Token = GenerateJwtToken(user, role)};
     }
 
     private string GenerateJwtToken(ApplicationUser user, string role)

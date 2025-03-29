@@ -29,13 +29,19 @@
 
             if (authResponse is not null)
             {
-                await AuthStateProvider.MarkUserAsAuthenticated(authResponse.Token, authResponse.Role, authResponse.Customer);
-                Navigation.NavigateTo("/");
+                var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+                await customAuthStateProvider.MarkUserAsAuthenticated(authResponse.Token, authResponse.Customer);
+
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+
+                message = $"Inloggning lyckades";
             }
         }
         else
         {
-            message = "Login failed";
+            message = "Inloggning misslyckades";
         }
+        StateHasChanged();
     }
 }

@@ -1,5 +1,5 @@
 ﻿@page "/shop"
-@using Webshop.Application.DTOs.Responses
+@inject CartService CartService
 @inject IHttpClientFactory HttpClientFactory
 
 <MudContainer>
@@ -14,6 +14,7 @@
                         <MudText Typo="Typo.subtitle1">Pris: @product.Price.ToString("C")</MudText>
                     </MudCardContent>
                     <MudCardActions>
+                        <MudButton Color="Color.Primary" OnClick="() => AddToCart(product)">Lägg i kundkorg</MudButton>
                         <MudButton Color="Color.Primary" OnClick="() => ToggleExpand(product)">Mer info</MudButton>
                     </MudCardActions>
                     <MudCollapse Expanded="@product.IsExpanded">
@@ -40,6 +41,7 @@
             {
                 var productModel = new ProductModel()
                     {
+                        Id = response.Id,
                         Name = response.Name,
                         Price = response.Price,
                         Description = response.Description,
@@ -56,12 +58,8 @@
         product.IsExpanded = !product.IsExpanded;
     }
 
-    private class ProductModel
+    private async Task AddToCart(ProductModel product)
     {
-        public string Name { get; set; } = string.Empty;
-        public double Price { get; set; }
-        public string Description { get; set; } = string.Empty;
-        public string ImageUrl { get; set; } = string.Empty;
-        public bool IsExpanded { get; set; } = false;
+        await CartService.AddToCartAsync(product);
     }
 }
