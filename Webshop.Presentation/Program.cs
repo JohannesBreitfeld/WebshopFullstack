@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 using MudBlazor.Services;
 using Webshop.Presentation.Auth;
 using Webshop.Presentation.Components;
@@ -8,8 +9,20 @@ using Webshop.Presentation.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 5000;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+    config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
+});
 builder.Services.AddScoped<CartService>();
+builder.Services.AddScoped<CustomerService>();
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddRazorComponents()

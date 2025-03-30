@@ -1,0 +1,97 @@
+﻿@page "/profile"
+@using Microsoft.AspNetCore.Authorization
+@using Webshop.Application.DTOs.Requests
+@inject CustomAuthStateProvider AuthStateProvider
+
+<MudContainer>
+    <MudCard>
+        <MudCardContent>
+            <MudTypography Variant="H4">Profil</MudTypography>
+
+            <!-- Redigera kunduppgifter -->
+            <MudTextField Label="Förnamn" @bind-Value="CustomerInfo.FirstName" Variant="Variant.Outlined" />
+            <MudTextField Label="Efternamn" @bind-Value="CustomerInfo.LastName" Variant="Variant.Outlined" />
+            <MudTextField Label="E-post" @bind-Value="CustomerInfo.Email" Variant="Variant.Outlined" Disabled="true" />
+            <MudTextField Label="Adress" @bind-Value="CustomerInfo.StreetAdress" Variant="Variant.Outlined" />
+            <MudTextField Label="Postnummer" @bind-Value="CustomerInfo.PostalCode" Variant="Variant.Outlined" />
+            <MudTextField Label="Stad" @bind-Value="CustomerInfo.City" Variant="Variant.Outlined" />
+            <MudButton Color="Color.Primary" OnClick="UpdateCustomerInfo">Spara ändringar</MudButton>
+
+            <MudDivider />
+
+            <!-- Orderhistorik -->
+            <MudTypography Variant="H5">Orderhistorik</MudTypography>
+            <MudTable Items="OrderHistory" Hover="true">
+                <HeaderContent>
+                    <MudTh>Order ID</MudTh>
+                    <MudTh>Datum</MudTh>
+                    <MudTh>Totalt</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="order">
+                    <MudTd>@order.Id</MudTd>
+                    <MudTd>@order.Date.ToString("yyyy-MM-dd")</MudTd>
+                    <MudTd>@order.Total.ToString("C")</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private UpdateCustomerRequest CustomerInfo { get; set; } = new();
+    private List<Order> OrderHistory = new();
+    private int UserId { get; set; }
+
+    [Inject] private CustomerService CustomerService { get; set; }
+    [Inject] private ISnackbar Snackbar { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            var customer = await AuthStateProvider.GetCustomerDataAsync();
+            if (customer != null)
+
+            {
+                UserId = customer.Id;
+                CustomerInfo = new UpdateCustomerRequest
+                    {
+                        FirstName = customer.FirstName,
+                        LastName = customer.LastName,
+                        Email = customer.Email,
+                        StreetAdress = customer.StreetAdress,
+                        PostalCode = customer.PostalCode,
+                        City = customer.City
+                    };
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdateCustomerInfo()
+    {
+        var updatedCustomer = await CustomerService.UpdateCustomerAddressAsync(UserId, CustomerInfo);
+
+        if (updatedCustomer != null)
+        {
+            Snackbar.Add("Kunduppgifter uppdaterade!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Misslyckades med att uppdatera kunduppgifterna.", Severity.Error);
+        }
+    }
+
+    private class Order
+    {
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Total { get; set; }
+    }
+}
+
+

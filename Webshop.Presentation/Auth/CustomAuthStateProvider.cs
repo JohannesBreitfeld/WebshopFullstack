@@ -10,25 +10,20 @@ namespace Webshop.Presentation.Auth;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {
-    private readonly HttpClient _httpClient;
     private readonly ProtectedLocalStorage _localStorage;
 
-    public CustomAuthStateProvider(HttpClient httpClient, ProtectedLocalStorage localStorage)
+    public CustomAuthStateProvider(ProtectedLocalStorage localStorage)
     {
-        _httpClient = httpClient;
         _localStorage = localStorage;
     }
 
     public async Task MarkUserAsAuthenticated(string token, CustomerResponse? customer)
     {
-        Console.WriteLine($"Sparar token: {token}");
-
         await _localStorage.SetAsync("authToken", token);
 
         if (customer != null)
         {
             var customerJson = JsonSerializer.Serialize(customer);
-            Console.WriteLine($"Sparar customerData: {customerJson}");
             await _localStorage.SetAsync("customerData", customerJson);
         }
 

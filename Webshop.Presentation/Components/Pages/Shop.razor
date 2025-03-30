@@ -1,6 +1,7 @@
 ﻿@page "/shop"
 @inject CartService CartService
 @inject IHttpClientFactory HttpClientFactory
+@inject ISnackbar Snackbar
 
 <MudContainer>
     <MudGrid>
@@ -61,5 +62,6 @@
     private async Task AddToCart(ProductModel product)
     {
         await CartService.AddToCartAsync(product);
+        Snackbar.Add($"{product.Name} tillagd i varukorgen", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
     }
 }
