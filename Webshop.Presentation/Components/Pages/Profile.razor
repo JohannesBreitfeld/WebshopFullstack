@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Webshop.Application.DTOs.Requests
 @inject CustomAuthStateProvider AuthStateProvider
+@inject OrderService OrderService
 
 <MudContainer>
     <MudCard>
@@ -20,27 +21,73 @@
             <MudDivider />
 
             <!-- Orderhistorik -->
-            <MudTypography Variant="H5">Orderhistorik</MudTypography>
-            <MudTable Items="OrderHistory" Hover="true">
-                <HeaderContent>
-                    <MudTh>Order ID</MudTh>
-                    <MudTh>Datum</MudTh>
-                    <MudTh>Totalt</MudTh>
-                </HeaderContent>
-                <RowTemplate Context="order">
-                    <MudTd>@order.Id</MudTd>
-                    <MudTd>@order.Date.ToString("yyyy-MM-dd")</MudTd>
-                    <MudTd>@order.Total.ToString("C")</MudTd>
-                </RowTemplate>
-            </MudTable>
+            @if (OrderHistory is null)
+            {
+                <MudText>Inga ordrar hittades</MudText>
+            }
+            else
+            {           
+                <MudTable Items="@OrderHistory" Hover="true">
+                    <HeaderContent>
+                        <MudTh>ID</MudTh>
+                        <MudTh>Kund-ID</MudTh>
+                        <MudTh>Datum</MudTh>
+                        <MudTh></MudTh>
+
+                    </HeaderContent>
+
+                    <RowTemplate Context="order">
+                        <MudTd>@order.Id</MudTd>
+                        <MudTd>@order.CustomerId</MudTd>
+                        <MudTd>@order.DateTime.ToString("yyyy-MM-dd HH:mm")</MudTd>
+                        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(order.Id))">@((order.ShowDetails == true) ? "Hide" : "Show") Address Details</MudButton></MudTd>
+                    </RowTemplate>
+                    <ChildRowContent>
+                        @if (context.ShowDetails)
+                        {
+                            <MudTr>
+                                <td colspan="4">
+                                    <MudCard Elevation="0">
+                                        <MudCardHeader>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.body1">Produkter för order <strong>@context.Id</strong></MudText>
+                                            </CardHeaderContent>
+                                        </MudCardHeader>
+                                        <MudCardContent Class="pa-0">
+                                            <MudTable Items="@context.Products" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                <ColGroup>
+                                                    <col />
+                                                    <col />
+                                                    <col style="width:200px;" />
+                                                </ColGroup>
+                                                <HeaderContent>
+                                                    <MudTh>Produktnummer</MudTh>
+                                                    <MudTh>Produktnamn</MudTh>
+                                                    <MudTh>Antal</MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd DataLabel="Address Line 1">@ProductsContext.ProductId</MudTd>
+                                                    <MudTd DataLabel="Address Line 2">@ProductsContext.ProductName</MudTd>
+                                                    <MudTd DataLabel="Postal Code">@ProductsContext.Quantity</MudTd>
+                                                </RowTemplate>
+                                            </MudTable>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </td>
+                            </MudTr>
+                        }
+                    </ChildRowContent>
+                </MudTable>
+            }
         </MudCardContent>
     </MudCard>
 </MudContainer>
 
 @code {
     private UpdateCustomerRequest CustomerInfo { get; set; } = new();
-    private List<Order> OrderHistory = new();
+    private List<OrderModel>? OrderHistory = new();
     private int UserId { get; set; }
+    private HashSet<int> expandedOrders = new();
 
     [Inject] private CustomerService CustomerService { get; set; }
     [Inject] private ISnackbar Snackbar { get; set; }
@@ -67,6 +114,7 @@
                         PostalCode = customer.PostalCode,
                         City = customer.City
                     };
+                await LoadOrderHistoryAsync();
             }
             StateHasChanged();
         }
@@ -86,11 +134,33 @@
         }
     }
 
-    private class Order
+    private async Task LoadOrderHistoryAsync()
     {
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public decimal Total { get; set; }
+        var response = await OrderService.GetOrderByCustomerId(UserId);
+        if (response is null || response.Items.Count() == 0)
+        {
+            OrderHistory = null;
+        }
+        else
+        {
+            foreach (var order in response.Items)
+            {
+                OrderHistory.Add(new OrderModel()
+                    {
+                        Id = order.Id,
+                        CustomerId = order.CustomerId,
+                        DateTime = order.DateTime,
+                        Products = order.Products,
+                        ShowDetails = false
+                    });
+            }
+        }
+    }
+
+    private void ShowBtnPress(int nr)
+    {
+        OrderModel tmpOrder = OrderHistory.First(f => f.Id == nr);
+        tmpOrder.ShowDetails = !tmpOrder.ShowDetails;
     }
 }
 
