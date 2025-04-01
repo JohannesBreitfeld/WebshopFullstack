@@ -1,6 +1,7 @@
 ﻿@page "/profile"
 @using Microsoft.AspNetCore.Authorization
 @using Webshop.Application.DTOs.Requests
+@using Webshop.Presentation.Mapping
 @inject CustomAuthStateProvider AuthStateProvider
 @inject OrderService OrderService
 
@@ -40,7 +41,7 @@
                         <MudTd>@order.Id</MudTd>
                         <MudTd>@order.CustomerId</MudTd>
                         <MudTd>@order.DateTime.ToString("yyyy-MM-dd HH:mm")</MudTd>
-                        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(order.Id))">@((order.ShowDetails == true) ? "Hide" : "Show") Address Details</MudButton></MudTd>
+                        <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(order.Id))">@((order.ShowDetails == true) ? "Dölj" : "Visa") orderdetaljer</MudButton></MudTd>
                     </RowTemplate>
                     <ChildRowContent>
                         @if (context.ShowDetails)
@@ -66,9 +67,9 @@
                                                     <MudTh>Antal</MudTh>
                                                 </HeaderContent>
                                                 <RowTemplate>
-                                                    <MudTd DataLabel="Address Line 1">@ProductsContext.ProductId</MudTd>
-                                                    <MudTd DataLabel="Address Line 2">@ProductsContext.ProductName</MudTd>
-                                                    <MudTd DataLabel="Postal Code">@ProductsContext.Quantity</MudTd>
+                                                    <MudTd DataLabel="Produktnummer">@ProductsContext.ProductId</MudTd>
+                                                    <MudTd DataLabel="Produktnamn">@ProductsContext.ProductName</MudTd>
+                                                    <MudTd DataLabel="Antal">@ProductsContext.Quantity</MudTd>
                                                 </RowTemplate>
                                             </MudTable>
                                         </MudCardContent>
@@ -136,25 +137,7 @@
 
     private async Task LoadOrderHistoryAsync()
     {
-        var response = await OrderService.GetOrderByCustomerId(UserId);
-        if (response is null || response.Items.Count() == 0)
-        {
-            OrderHistory = null;
-        }
-        else
-        {
-            foreach (var order in response.Items)
-            {
-                OrderHistory.Add(new OrderModel()
-                    {
-                        Id = order.Id,
-                        CustomerId = order.CustomerId,
-                        DateTime = order.DateTime,
-                        Products = order.Products,
-                        ShowDetails = false
-                    });
-            }
-        }
+        OrderHistory = await OrderService.GetOrderByCustomerId(UserId);
     }
 
     private void ShowBtnPress(int nr)

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Webshop.Presentation.Components.Layout
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,6 +11,7 @@
     <ImportMap />
     <link rel="icon" type="image/ico" href="favicon.ico" />
     <HeadOutlet @rendermode="InteractiveServer" />
+
 </head>
 
 <body>
@@ -19,3 +21,16 @@
 </body>
 
 </html>
+
+@* <CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <MudText Typo="Typo.h4">Sidan hittades inte.</MudText>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState> *@

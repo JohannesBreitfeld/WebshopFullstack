@@ -1,8 +1,5 @@
 ﻿using Blazored.LocalStorage;
-using System.Net.Http;
 using Webshop.Application.DTOs.Requests;
-using Webshop.Application.DTOs.Responses;
-using Webshop.Domain.Entities;
 using Webshop.Presentation.Models;
 
 namespace Webshop.Presentation.Services;

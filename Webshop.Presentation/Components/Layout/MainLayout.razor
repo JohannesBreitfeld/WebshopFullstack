@@ -20,6 +20,21 @@
                 <MudNavLink Href="/" Match="NavLinkMatch.All" Class="mx-auto">Hem</MudNavLink>
                 <MudNavLink Href="/shop" Match="NavLinkMatch.Prefix" Class="mx-auto">Shop</MudNavLink>
                 <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Class="mx-auto">Weather</MudNavLink>
+                @if(role == "Admin")
+                {
+                    <MudMenu Icon="@Icons.Material.Filled.AccountCircle">
+                        <MudMenuItem>
+                            <MudNavLink Href="/users">Alla användare</MudNavLink>
+                        </MudMenuItem>
+                        <MudMenuItem>
+                            <MudNavLink Href="/order-overview">Alla ordrar</MudNavLink>
+                        </MudMenuItem>
+                        <MudMenuItem>
+                            <MudNavLink Href="/products">Alla produkter</MudNavLink>
+                        </MudMenuItem>
+                    </MudMenu>
+                }
+           
             </MudContainer>
         </MudHidden>
 
@@ -34,7 +49,7 @@
             {
                 if(customerData is not null)
                 {
-                    <MudText>Inloggad som @customerData.FirstName @customerData.LastName</MudText>
+                    <MudButton OnClick="GoToProfile">Inloggad som @customerData.FirstName @customerData.LastName</MudButton>
                 }
             }
         }
@@ -55,7 +70,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
         OnClick="@ShowCart"
         Color="Color.Inherit">
-            <MudBadge BadgeColor="Color.Secondary" Content="@CartService.Items.Count" />
+            <MudBadge BadgeColor="Color.Secondary" Content="@numberOfCartItems" />
         </MudIconButton>
     </MudAppBar>
 
@@ -91,7 +106,7 @@
             {
                 <MudPaper Class="p-2 mb-2">
                     <MudText>@item.Name x @item.Quantity</MudText>
-                    <MudText Typo="Typo.caption">@($"{item.Price * item.Quantity:C}")</MudText>
+                    <MudText Typo="Typo.caption">@($"{item.Price * item.Quantity}")</MudText>
                 </MudPaper>
             }
 
@@ -145,6 +160,7 @@
     private string? role;
     private bool isAuthenticated = false;
     private bool _cartOpen = false;
+    private int numberOfCartItems;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -162,7 +178,7 @@
             base.OnInitialized();
             await CartService.LoadCartAsync();
             CartService.OnCartChanged += StateHasChanged;
-
+            numberOfCartItems = CartService.Items.Count();
             StateHasChanged();
         }
     }
@@ -214,6 +230,7 @@
 
     private void GoToLogin() => Navigation.NavigateTo("/login");
     private void GoToHome() => Navigation.NavigateTo("/");
+    private void GoToProfile() => Navigation.NavigateTo("/profile");
 
     private async Task PlaceOrder()
     {
