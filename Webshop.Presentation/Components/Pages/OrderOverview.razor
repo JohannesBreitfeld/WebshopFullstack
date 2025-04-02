@@ -1,99 +1,101 @@
 ﻿@page "/order-overview"
 @inject OrderService OrderService
+@inject NavigationManager NavigationManager
+@inject CustomAuthStateProvider AuthStateProvider
 
-<MudContainer>
-    <MudCard>
-        @if (OrderHistory is null)
-        {
-            <MudText>Inga ordrar hittades</MudText>
-        }
-        else
-        {
-            <MudTable Items="@OrderHistory" Hover="true">
-                <HeaderContent>
-                    <MudTh>ID</MudTh>
-                    <MudTh>Kund-ID</MudTh>
-                    <MudTh>Datum</MudTh>
-                    <MudTh></MudTh>
-                </HeaderContent>
+@if(Role == "Admin")
+{
+    <MudContainer>
+        <MudCard>
+            @if (OrderHistory is null)
+            {
+                <MudText>Inga ordrar hittades</MudText>
+            }
+            else
+            {
+                <MudTable Items="@OrderHistory" Hover="true" SortLabel="Sortera efter" Elevation="0" AllowUnsorted="false">
+                    <HeaderContent>
+                        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<OrderModel, object>(x=>x.Id)">Ordernummer</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<OrderModel, object>(x=>x.CustomerId)">Kundnummer</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<OrderModel, object>(x=>x.DateTime)">Orderdatum</MudTableSortLabel></MudTh>
+                        <MudTh></MudTh>
+                    </HeaderContent>
 
-                <RowTemplate Context="order">
-                    <MudTd>@order.Id</MudTd>
-                    <MudTd>@order.CustomerId</MudTd>
-                    <MudTd>@order.DateTime.ToString("yyyy-MM-dd HH:mm")</MudTd>
-                    <MudTd>
-                        <MudButton
-                        Color="Color.Primary"
-                        OnClick="@(() => ToggleOrder(order.Id))">
-                            @((order.ShowDetails == true) ? "Dölj" : "Visa") orderdetaljer
-                    </MudButton>
-                    </MudTd>
-                </RowTemplate>
+                    <RowTemplate Context="order">
+                        <MudTd>@order.Id</MudTd>
+                        <MudTd>@order.CustomerId</MudTd>
+                        <MudTd>@order.DateTime.ToString("yyyy-MM-dd HH:mm")</MudTd>
+                        <MudTd>
+                            <MudButton
+                            Color="Color.Primary"
+                            OnClick="@(() => ToggleOrder(order.Id))">
+                                @((order.ShowDetails == true) ? "Dölj" : "Visa") orderdetaljer
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                     
+                    <ChildRowContent>
+                        @if (context.ShowDetails)
+                        {
+                            <MudTr>
+                                <td colspan="4">
+                                    <MudCard Elevation="0">
+                                        <MudCardHeader>
+                                            <CardHeaderContent>
+                                                <MudText Typo="Typo.body1">Produkter för order <strong>@context.Id</strong></MudText>
+                                            </CardHeaderContent>
+                                        </MudCardHeader>
+                                        <MudCardContent Class="pa-0">
+                                            <MudTable Items="@context.Products" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                <ColGroup>
+                                                    <col />
+                                                    <col />
+                                                    <col style="width:200px;" />
+                                                </ColGroup>
+                                                <HeaderContent>
+                                                    <MudTh>Produktnummer</MudTh>
+                                                    <MudTh>Produktnamn</MudTh>
+                                                    <MudTh>Antal</MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd DataLabel="Produktnummer">@ProductsContext.ProductId</MudTd>
+                                                    <MudTd DataLabel="Produktnamn">@ProductsContext.ProductName</MudTd>
+                                                    <MudTd DataLabel="Antal">@ProductsContext.Quantity</MudTd>
+                                                </RowTemplate>
+                                            </MudTable>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </td>
+                            </MudTr>
+                        }
+                    </ChildRowContent>
+                </MudTable>
+            } 
+        </MudCard>
+    </MudContainer>
 
-                <ChildRowContent>
-                    @if (context.ShowDetails)
-                    {
-                        <MudTr>
-                            <td colspan="4">
-                                <MudCard Elevation="0">
-                                    <MudCardHeader>
-                                        <CardHeaderContent>
-                                            <MudText Typo="Typo.body1">Produkter för order <strong>@context.Id</strong></MudText>
-                                        </CardHeaderContent>
-                                    </MudCardHeader>
-                                    <MudCardContent Class="pa-0">
-                                        <MudTable Items="@context.Products" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
-                                            <ColGroup>
-                                                <col />
-                                                <col />
-                                                <col style="width:200px;" />
-                                            </ColGroup>
-                                            <HeaderContent>
-                                                <MudTh>Produktnummer</MudTh>
-                                                <MudTh>Produktnamn</MudTh>
-                                                <MudTh>Antal</MudTh>
-                                            </HeaderContent>
-                                            <RowTemplate>
-                                                <MudTd DataLabel="Produktnummer">@ProductsContext.ProductId</MudTd>
-                                                <MudTd DataLabel="Produktnamn">@ProductsContext.ProductName</MudTd>
-                                                <MudTd DataLabel="Antal">@ProductsContext.Quantity</MudTd>
-                                            </RowTemplate>
-                                        </MudTable>
-                                    </MudCardContent>
-                                </MudCard>
-                            </td>
-                        </MudTr>
-                    }
-                </ChildRowContent>
-            </MudTable>
-        }
-    </MudCard>
-</MudContainer>
-
-
+}
+else
+{
+   <h1>404 Not found</h1>
+}
 
 @code {
     private List<OrderModel>? OrderHistory;
-
-    private bool sortAscending = true;
-
-    private void SortOrders<T>(Func<OrderModel, T> keySelector)
-    {
-        if (OrderHistory is not null)
-        {
-            if (sortAscending)
-                OrderHistory = OrderHistory.OrderBy(keySelector).ToList();
-            else
-                OrderHistory = OrderHistory.OrderByDescending(keySelector).ToList();
-        }
-        sortAscending = !sortAscending;
-    }
+    private string? Role;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
-             OrderHistory = await OrderService.GetAllOrdersAsync(); 
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                Role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+            }
+            OrderHistory = await OrderService.GetAllOrdersAsync(); 
         }
         StateHasChanged();
     }
