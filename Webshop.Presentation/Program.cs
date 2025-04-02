@@ -24,6 +24,7 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddScoped<CartService>();
 builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<ProductService>();
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddRazorComponents()

@@ -1,5 +1,102 @@
-﻿<h3>Products</h3>
+﻿@page "/products"
+@using System.Net.Http.Json
+@inject CustomAuthStateProvider AuthStateProvider
+@inject ProductService ProductService
 
+@if(Role == "Admin")
+{
+    <MudDataGrid T="ProductModel" MultiSelection="true" Items="@AllProducts" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
+    Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Products</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+            AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <Columns>
+            <TemplateColumn Sortable="false">
+                <CellTemplate>  
+                   <img src="@context.Item.ImageUrl" alt="@context.Item.Name" width="100" style="border-radius: 5px;" />  
+                </CellTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Id" Title="Produktnummer"/>
+            <PropertyColumn Property="x => x.Name" SortBy="@_sortBy" />
+            <PropertyColumn Property="x => x.Price" SortBy="@_sortBy" />
+            <PropertyColumn Property="x => x.Description" Sortable="false"/>
+            <PropertyColumn Property="x => x.CategoryModel != null ? x.CategoryModel.Name : null" Title="Kategori" />
+            <PropertyColumn Property="x => x.StockBalance" Title="Antal på lager" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="ProductModel" />
+        </PagerContent>
+    </MudDataGrid>
+
+}
+else
+{
+    <h1>404 Not Found</h1>
+}
 @code {
+    private IEnumerable<ProductModel>? AllProducts = new List<ProductModel>();
+    private string? _searchString;
+    private bool _sortNameByLength;
+    private List<string> _events = new();
+    private string? Role;
+    // custom sort by name length
+    private Func<ProductModel, object> _sortBy => x =>
+    {
+        if (_sortNameByLength)
+            return x.Name.Length;
+        else
+            return x.Name;
+    };
+    // quick filter - filter globally across multiple columns with the same input
+    private Func<ProductModel, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
 
+        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;     
+
+        if (x.Id.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AllProducts = await ProductService.GetAllAsync();
+
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                Role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+            }
+        }
+    }
+
+    // events
+    void RowClicked(DataGridRowClickEventArgs<ProductModel> args)
+    {
+        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void RowRightClicked(DataGridRowClickEventArgs<ProductModel> args)
+    {
+        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    }
+
+    void SelectedItemsChanged(HashSet<ProductModel> items)
+    {
+        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
+    }
 }
