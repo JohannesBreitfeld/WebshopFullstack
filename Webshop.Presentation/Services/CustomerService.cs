@@ -35,7 +35,7 @@ public class CustomerService
         return null;
     }
 
-    public async Task<CustomerResponse?> UpdateCustomerAddressAsync(int id, UpdateCustomerRequest request)
+    public async Task<CustomerResponse?> UpdateCustomerAsync(int id, UpdateCustomerRequest request)
     {
         try
         {

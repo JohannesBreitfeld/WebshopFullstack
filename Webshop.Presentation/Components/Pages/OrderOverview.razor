@@ -42,11 +42,11 @@
                                     <MudCard Elevation="0">
                                         <MudCardHeader>
                                             <CardHeaderContent>
-                                                <MudText Typo="Typo.body1">Produkter för order <strong>@context.Id</strong></MudText>
+                                                <MudText Typo="Typo.body1">Produkter för ordernummer <strong>@context.Id</strong></MudText>
                                             </CardHeaderContent>
                                         </MudCardHeader>
                                         <MudCardContent Class="pa-0">
-                                            <MudTable Items="@context.Products" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                            <MudTable Items="@context.Products" Dense="true" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
                                                 <ColGroup>
                                                     <col />
                                                     <col />
@@ -63,6 +63,7 @@
                                                     <MudTd DataLabel="Antal">@ProductsContext.Quantity</MudTd>
                                                 </RowTemplate>
                                             </MudTable>
+                                            <MudDivider />
                                         </MudCardContent>
                                     </MudCard>
                                 </td>

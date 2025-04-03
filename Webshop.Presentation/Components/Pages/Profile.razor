@@ -20,7 +20,7 @@
             <MudButton Color="Color.Primary" OnClick="UpdateCustomerInfo">Spara ändringar</MudButton>
 
             <MudDivider />
-
+            
             <!-- Orderhistorik -->
             @if (OrderHistory is null)
             {
@@ -123,7 +123,7 @@
 
     private async Task UpdateCustomerInfo()
     {
-        var updatedCustomer = await CustomerService.UpdateCustomerAddressAsync(UserId, CustomerInfo);
+        var updatedCustomer = await CustomerService.UpdateCustomerAsync(UserId, CustomerInfo);
 
         if (updatedCustomer != null)
         {

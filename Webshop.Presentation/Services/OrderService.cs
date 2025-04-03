@@ -18,9 +18,7 @@ public class OrderService
         var client = _httpClientFactory.CreateClient("API");
         var response = await client.GetFromJsonAsync<OrdersResponse>($"api/orders/by-customer/{id}");
 
-        return response is not null
-            ? response.MapToModels()
-            : null;
+        return response?.MapToModels();
     }
 
 
@@ -29,9 +27,7 @@ public class OrderService
         var client = _httpClientFactory.CreateClient("API");
         var response = await client.GetFromJsonAsync<OrdersResponse>("api/orders");
 
-        return response is not null
-           ? response.MapToModels()
-           : null;
+        return response?.MapToModels();
     }
 
 }
