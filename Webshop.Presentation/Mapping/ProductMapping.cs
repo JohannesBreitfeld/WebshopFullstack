@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.Responses;
 using Webshop.Domain.Entities;
 using Webshop.Presentation.Models;
@@ -25,7 +26,7 @@ namespace Webshop.Presentation.Mapping
                         Price = product.Price,
                         Description = product.Description,
                         StockBalance = product.StockBalance,
-                        CategoryId = product.StockBalance,
+                        CategoryId = (int)product.ProductCategoryId,
                         ImageUrl = product.ImageUrl,
                         IsExpanded = false
                     });
@@ -34,5 +35,18 @@ namespace Webshop.Presentation.Mapping
             return models;
         }
 
+        public static UpdateProductRequest MapToUpdateRequest(this ProductModel model)
+        {
+            return new UpdateProductRequest()
+            {
+                Name = model.Name,
+                Price = model.Price,
+                Description = model.Description,
+                StockBalance = model.StockBalance,
+                ProductCategoryId = model.CategoryId,
+                ImageUrl = model.ImageUrl,
+                Status = model.Status
+            };
+        }
     }
 }

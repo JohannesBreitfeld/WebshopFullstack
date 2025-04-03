@@ -1,12 +1,15 @@
 ﻿@page "/products"
 @using System.Net.Http.Json
+@using Webshop.Domain.Enums
 @inject CustomAuthStateProvider AuthStateProvider
 @inject ProductService ProductService
+@inject CategoryService CategoryService
+@inject ISnackbar Snackbar
 
-@if(Role == "Admin")
+@if (Role == "Admin")
 {
-    <MudDataGrid T="ProductModel" MultiSelection="true" Items="@AllProducts" SortMode="SortMode.Multiple" Filterable="true" QuickFilter="@_quickFilter"
-    Hideable="true" RowClick="@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged">
+    <MudDataGrid T="ProductModel" Readonly="false" Items="@AllProducts" SortMode="SortMode.Multiple" QuickFilter="@_quickFilter"
+    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" CommittedItemChanges="@CommittedItemChanges">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Products</MudText>
             <MudSpacer />
@@ -15,41 +18,64 @@
         </ToolBarContent>
         <Columns>
             <TemplateColumn Sortable="false">
-                <CellTemplate>  
-                   <img src="@context.Item.ImageUrl" alt="@context.Item.Name" width="100" style="border-radius: 5px;" />  
+                <CellTemplate>
+                    <img src="@context.Item.ImageUrl" alt="@context.Item.Name" width="100" style="border-radius: 5px;" />
+                </CellTemplate>
+                <EditTemplate>
+                    <MudTextField Label="Bild-URL" @bind-Value="@context.Item.ImageUrl" />
+                </EditTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Id" Editable="false" Title="Produktnummer"/>
+            <PropertyColumn Property="x => x.Name" />
+            <PropertyColumn Property="x => x.Price" />
+            <PropertyColumn Property="x => x.Description" Sortable="false" />
+            <TemplateColumn Title="Kategori">
+                <CellTemplate>
+                    @{
+                        var categoryName = Categories?.FirstOrDefault(c => c.Id == context.Item.CategoryId)?.Name ?? context.Item.CategoryId.ToString();
+                    }
+                    <MudText>@categoryName</MudText>
+                </CellTemplate>
+                <EditTemplate>
+                    <MudSelect Label="Kategori" @bind-Value="@context.Item.CategoryId">
+                        @if (Categories != null)
+                        {
+                            @foreach (var category in Categories)
+                            {
+                                <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                </EditTemplate>
+            </TemplateColumn>
+            <PropertyColumn Property="x => x.Status" Title="Status" >
+                <EditTemplate>
+                <MudSelect T="ProductStatus" Label="Status" @bind-Value="context.Item.Status">
+                    @foreach (var status in Enum.GetValues(typeof(ProductStatus)).Cast<ProductStatus>())
+                    {
+                        <MudSelectItem T="ProductStatus" Value="@status">@status</MudSelectItem>
+                    }
+                </MudSelect>
+            </EditTemplate>
+            </PropertyColumn>
+            <PropertyColumn Property="x => x.StockBalance" Title="Antal på lager" />
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@context.Actions.StartEditingItemAsync" />
                 </CellTemplate>
             </TemplateColumn>
-            <PropertyColumn Property="x => x.Id" Title="Produktnummer"/>
-            <PropertyColumn Property="x => x.Name" SortBy="@_sortBy" />
-            <PropertyColumn Property="x => x.Price" SortBy="@_sortBy" />
-            <PropertyColumn Property="x => x.Description" Sortable="false"/>
-            <PropertyColumn Property="x => x.CategoryModel != null ? x.CategoryModel.Name : null" Title="Kategori" />
-            <PropertyColumn Property="x => x.StockBalance" Title="Antal på lager" />
         </Columns>
         <PagerContent>
             <MudDataGridPager T="ProductModel" />
         </PagerContent>
     </MudDataGrid>
-
-}
-else
-{
-    <h1>404 Not Found</h1>
 }
 @code {
     private IEnumerable<ProductModel>? AllProducts = new List<ProductModel>();
     private string? _searchString;
-    private bool _sortNameByLength;
-    private List<string> _events = new();
     private string? Role;
-    // custom sort by name length
-    private Func<ProductModel, object> _sortBy => x =>
-    {
-        if (_sortNameByLength)
-            return x.Name.Length;
-        else
-            return x.Name;
-    };
+    private IEnumerable<CategoryModel>? Categories;
+
     // quick filter - filter globally across multiple columns with the same input
     private Func<ProductModel, bool> _quickFilter => x =>
     {
@@ -60,7 +86,7 @@ else
             return true;
 
         if (x.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
-            return true;     
+            return true;
 
         if (x.Id.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
             return true;
@@ -73,6 +99,7 @@ else
         if (firstRender)
         {
             AllProducts = await ProductService.GetAllAsync();
+            Categories = await CategoryService.GetAllAsync();
 
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
@@ -81,22 +108,20 @@ else
             {
                 Role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
             }
+            StateHasChanged();
         }
     }
-
-    // events
-    void RowClicked(DataGridRowClickEventArgs<ProductModel> args)
+    private async Task CommittedItemChanges(ProductModel item)
     {
-        _events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
+        var success = await ProductService.UpdateAsync(item);
+        if (success)
+        {
+            Snackbar.Add($"Produktnummer {item.Id} har uppdaterats!", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
+        }
+        else
+        {
+            Snackbar.Add($"Uppdatering av produktnummer {item.Id} misslyckades!", Severity.Error, c => c.SnackbarVariant = Variant.Filled); 
+        }
 
-    void RowRightClicked(DataGridRowClickEventArgs<ProductModel> args)
-    {
-        _events.Insert(0, $"Event = RowRightClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-
-    void SelectedItemsChanged(HashSet<ProductModel> items)
-    {
-        _events.Insert(0, $"Event = SelectedItemsChanged, Data = {System.Text.Json.JsonSerializer.Serialize(items)}");
     }
 }
