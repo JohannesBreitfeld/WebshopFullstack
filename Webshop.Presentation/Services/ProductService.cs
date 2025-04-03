@@ -34,5 +34,22 @@ public class ProductService
         return response.IsSuccessStatusCode ? true : false;
     }
 
+    public async Task<ProductModel?> AddProductAsync(ProductModel model)
+    {
+        var request = model.MapToCreateRequest();
+        var client = _httpClientFactory.CreateClient("API");
+        var response = await client.PostAsJsonAsync<CreateProductRequest>($"api/products", request);
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var productResponse = await response.Content.ReadFromJsonAsync<ProductResponse>();
+
+        return productResponse?.MapToModel();
+    }
+
+
+
 
 }

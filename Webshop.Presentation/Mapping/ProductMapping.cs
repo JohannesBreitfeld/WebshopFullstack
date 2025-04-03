@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.Responses;
 using Webshop.Domain.Entities;
@@ -10,7 +11,7 @@ namespace Webshop.Presentation.Mapping
     {
         public static IEnumerable<ProductModel>? MapToModels(this ProductsResponse response)
         {
-            List<ProductModel>? models = new();
+            ObservableCollection<ProductModel>? models = new();
             if (response is null || response.Items.Count() == 0)
             {
                 models = null;
@@ -19,17 +20,7 @@ namespace Webshop.Presentation.Mapping
             {
                 foreach (var product in response.Items)
                 {
-                    models.Add(new ProductModel()
-                    {
-                        Id = product.Id,
-                        Name = product.Name,
-                        Price = product.Price,
-                        Description = product.Description,
-                        StockBalance = product.StockBalance,
-                        CategoryId = (int)product.ProductCategoryId,
-                        ImageUrl = product.ImageUrl,
-                        IsExpanded = false
-                    });
+                    models.Add(product.MapToModel());
                 }
             }
             return models;
@@ -46,6 +37,36 @@ namespace Webshop.Presentation.Mapping
                 ProductCategoryId = model.CategoryId,
                 ImageUrl = model.ImageUrl,
                 Status = model.Status
+            };
+        }
+
+        public static CreateProductRequest MapToCreateRequest(this ProductModel model)
+        {
+            return new CreateProductRequest()
+            {
+                Name = model.Name,
+                Price = model.Price,
+                Description = model.Description,
+                StockBalance = model.StockBalance,
+                ProductCategoryId = model.CategoryId,
+                ImageUrl = model.ImageUrl,
+                Status = model.Status
+            };
+        }
+
+
+        public static ProductModel MapToModel(this ProductResponse response)
+        {
+            return new ProductModel()
+            {
+                Id = response.Id,
+                Name = response.Name,
+                Price = response.Price,
+                Description = response.Description,
+                StockBalance = response.StockBalance,
+                CategoryId = (int)response.ProductCategoryId,
+                ImageUrl = response.ImageUrl,
+                IsExpanded = false
             };
         }
     }

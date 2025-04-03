@@ -9,12 +9,15 @@
 @if (Role == "Admin")
 {
     <MudDataGrid T="ProductModel" Readonly="false" Items="@AllProducts" SortMode="SortMode.Multiple" QuickFilter="@_quickFilter"
-    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" CommittedItemChanges="@CommittedItemChanges">
+    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" CommittedItemChanges="@CommittedItemChanges" @ref="MudDataGridRef">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Products</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
             AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            <MudButton Color="Color.Success" StartIcon="@Icons.Material.Filled.Add" OnClick="AddNewProduct">
+                Lägg till produkt
+            </MudButton>
         </ToolBarContent>
         <Columns>
             <TemplateColumn Sortable="false">
@@ -50,13 +53,13 @@
             </TemplateColumn>
             <PropertyColumn Property="x => x.Status" Title="Status" >
                 <EditTemplate>
-                <MudSelect T="ProductStatus" Label="Status" @bind-Value="context.Item.Status">
-                    @foreach (var status in Enum.GetValues(typeof(ProductStatus)).Cast<ProductStatus>())
-                    {
-                        <MudSelectItem T="ProductStatus" Value="@status">@status</MudSelectItem>
-                    }
-                </MudSelect>
-            </EditTemplate>
+                    <MudSelect T="ProductStatus" Label="Status" @bind-Value="context.Item.Status">
+                        @foreach (var status in Enum.GetValues(typeof(ProductStatus)).Cast<ProductStatus>())
+                        {
+                            <MudSelectItem T="ProductStatus" Value="@status">@status</MudSelectItem>
+                        }
+                    </MudSelect>
+                </EditTemplate>
             </PropertyColumn>
             <PropertyColumn Property="x => x.StockBalance" Title="Antal på lager" />
             <TemplateColumn>
@@ -75,6 +78,8 @@
     private string? _searchString;
     private string? Role;
     private IEnumerable<CategoryModel>? Categories;
+    private ProductModel? _newProduct;
+    private MudDataGrid<ProductModel>? MudDataGridRef;
 
     // quick filter - filter globally across multiple columns with the same input
     private Func<ProductModel, bool> _quickFilter => x =>
@@ -113,15 +118,62 @@
     }
     private async Task CommittedItemChanges(ProductModel item)
     {
-        var success = await ProductService.UpdateAsync(item);
-        if (success)
+        if (item.Id == 0)
         {
-            Snackbar.Add($"Produktnummer {item.Id} har uppdaterats!", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
+            var model = await ProductService.AddProductAsync(item);
+            if (model != null)
+            {
+                Snackbar.Add($"{item.Name} har lagt till med produktnummer {model.Id}!", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
+                item.Id = model.Id;
+            }
+            else
+            {
+                Snackbar.Add($"{item.Name} kunde inte läggas till", Severity.Error, c => c.SnackbarVariant = Variant.Filled);
+            }
         }
         else
         {
-            Snackbar.Add($"Uppdatering av produktnummer {item.Id} misslyckades!", Severity.Error, c => c.SnackbarVariant = Variant.Filled); 
+
+
+            var success = await ProductService.UpdateAsync(item);
+            if (success)
+            {
+                Snackbar.Add($"Produktnummer {item.Id} har uppdaterats!", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
+            }
+            else
+            {
+                Snackbar.Add($"Uppdatering av produktnummer {item.Id} misslyckades!", Severity.Error, c => c.SnackbarVariant = Variant.Filled);
+            }
         }
 
+    }
+
+    private async Task AddNewProduct()
+    {
+        _newProduct = new ProductModel
+            {
+                Id = 0, 
+                Name = "",
+                Price = 0,
+                Description = "",
+                StockBalance = 0,
+                ImageUrl = "",
+                CategoryId = Categories.FirstOrDefault()?.Id ?? 0,
+                Status = ProductStatus.Active           
+            };
+
+        var productList = AllProducts.ToList();
+        productList.Add(_newProduct);
+        AllProducts = productList;
+
+        await InvokeAsync(() => MudDataGridRef.SetEditingItemAsync(_newProduct));
+    }
+
+    private void CancelledItemChanges(ProductModel product)
+    {
+        if (product.Id == 0)
+        {
+            AllProducts = AllProducts.Where(p => p != product).ToList();
+        }
     }
 }
