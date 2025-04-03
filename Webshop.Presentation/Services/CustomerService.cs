@@ -3,6 +3,7 @@ using System.Text.Json;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.Responses;
 using Webshop.Domain.Entities;
+using Webshop.Presentation.Mapping;
 
 namespace Webshop.Presentation.Services;
 
@@ -60,5 +61,13 @@ public class CustomerService
         }
 
         return null;
+    }
+
+    public async Task<IEnumerable<CustomerResponse>?> GetAllAsync()
+    {
+        var client = _httpClientFactory.CreateClient("API");
+        var response = await client.GetFromJsonAsync<CustomersResponse>("api/customers");
+
+        return response?.Items;
     }
 }

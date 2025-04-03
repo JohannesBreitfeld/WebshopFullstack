@@ -1,0 +1,64 @@
+﻿@page "/customers"
+@inject CustomAuthStateProvider AuthStateProvider
+@inject CustomerService CustomerService
+
+@if (Role == "Admin")
+{
+    <MudContainer>
+        <MudCard>
+            @if (AllCustomers is null)
+            {
+                <MudText>Inga kunder hittades</MudText>
+            }
+            else
+            {
+                <MudTable Items="@AllCustomers" Hover="true" SortLabel="Sortera efter" Elevation="0">
+                    <HeaderContent>
+                        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<CustomerResponse, object>(x=>x.Id)">Kundnummer</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<CustomerResponse, object>(x=>x.LastName)">Namn</MudTableSortLabel></MudTh>
+                        <MudTh>Email</MudTh>
+                        <MudTh>Gatuadress</MudTh>
+                        <MudTh>Postnummer</MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<CustomerResponse, object>(x=>x.City)">Stad</MudTableSortLabel></MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate>
+                        <MudTd>@context.Id</MudTd>
+                        <MudTd>@context.FirstName @context.LastName</MudTd>
+                        <MudTd>@context.Email</MudTd>
+                        <MudTd>@context.StreetAdress</MudTd>
+                        <MudTd>@context.PostalCode</MudTd>
+                        <MudTd>@context.City</MudTd>
+                    </RowTemplate>
+
+                </MudTable>
+            }
+        </MudCard>
+    </MudContainer>
+
+}
+else
+{
+    <h1>404 Not found</h1>
+}
+@code 
+{
+    private IEnumerable<CustomerResponse>? AllCustomers;
+    private string? Role;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                Role = user.FindFirst(c => c.Type == ClaimTypes.Role)?.Value;
+            }
+            AllCustomers = await CustomerService.GetAllAsync(); 
+        }
+        StateHasChanged();
+    }
+}
