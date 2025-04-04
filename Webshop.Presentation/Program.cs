@@ -26,6 +26,7 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddRazorComponents()

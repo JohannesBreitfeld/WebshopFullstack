@@ -2,21 +2,24 @@
 @inject IHttpClientFactory HttpClientFactory
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4 mx-auto my-6" MaxWidth="500px">
+        <MudText Typo="Typo.h5" Class="mb-4">Logga in</MudText>
 
 <EditForm Model="loginRequest" OnValidSubmit="HandleLogin">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <MudTextField InputType="InputType.Email" @bind-Value="loginRequest.Email" Label="Username" Required="true" Class=""/>
-    <MudTextField InputType="InputType.Password" @bind-Value="loginRequest.Password" Label="Password" Type="password" Required="true" />
+    <MudTextField Class="mt-6" InputType="InputType.Password" @bind-Value="loginRequest.Password" Label="Password" Type="password" Required="true" />
 
-    <MudButton Class="LoginButton" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="HandleLogin">Log in</MudButton>
+    <MudButton Class="LoginButton mt-6" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="HandleLogin">Log in</MudButton>
 </EditForm>
-<p>@message</p>
+</MudPaper>
 
 @code {
     private LoginUserRequest loginRequest = new LoginUserRequest();
-    private string message = "";
 
     private async Task HandleLogin()
     {
@@ -34,13 +37,11 @@
 
                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
                 Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-
-                message = $"Inloggning lyckades";
             }
         }
         else
         {
-            message = "Inloggning misslyckades";
+            Snackbar.Add("Inloggningen misslyckades!", Severity.Error, c => c.SnackbarVariant = Variant.Filled);
         }
         StateHasChanged();
     }
