@@ -14,7 +14,15 @@
     <MudTextField InputType="InputType.Email" @bind-Value="loginRequest.Email" Label="Username" Required="true" Class=""/>
     <MudTextField Class="mt-6" InputType="InputType.Password" @bind-Value="loginRequest.Password" Label="Password" Type="password" Required="true" />
 
-    <MudButton Class="LoginButton mt-6" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="HandleLogin">Log in</MudButton>
+       <div class="d-flex gap-2 mt-6">
+            <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="HandleLogin">
+                Logga in
+            </MudButton>
+            <MudSpacer></MudSpacer>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" EndIcon="@Icons.Material.Filled.PersonAdd" OnClick="@NavigateToRegister">
+                Registrera nytt konto
+            </MudButton>
+        </div>
 </EditForm>
 </MudPaper>
 
@@ -44,5 +52,9 @@
             Snackbar.Add("Inloggningen misslyckades!", Severity.Error, c => c.SnackbarVariant = Variant.Filled);
         }
         StateHasChanged();
+    }
+    private void NavigateToRegister()
+    {
+        Navigation.NavigateTo("/register");
     }
 }
