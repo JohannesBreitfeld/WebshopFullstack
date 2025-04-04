@@ -1,0 +1,75 @@
+﻿@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@inject UserService UserService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudPaper Class="pa-4 mx-auto my-6" MaxWidth="500px">
+        <MudText Typo="Typo.h5" Class="mb-4">Registrera ny användare</MudText>
+    <MudForm @ref="_form" Model="@_model" Validation="new DataAnnotationsValidator()">
+
+        <MudTextField Label="Förnamn" @bind-Value="_model.FirstName" Required="true" />
+        <MudTextField Label="Efternamn" @bind-Value="_model.LastName" Required="true" />
+        <MudTextField Label="E-post" @bind-Value="_model.Email" Required="true" />
+        <MudTextField Label="Gatuadress" @bind-Value="_model.StreetAdress" Required="true" />
+        <MudTextField Label="Postnummer" @bind-Value="_model.PostalCode" Required="true" />
+        <MudTextField Label="Stad" @bind-Value="_model.City" Required="true" />
+
+        <MudTextField Label="Lösenord"
+                      @bind-Value="_model.Password"
+        InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+        Adornment="Adornment.End"
+        AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+        OnAdornmentClick="@TogglePasswordVisibility"
+        Required="true" />
+
+        <MudTextField Label="Bekräfta lösenord"
+                      @bind-Value="_model.ConfirmPassword"
+                      InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                      OnAdornmentClick="@TogglePasswordVisibility"
+                      Required="true" />
+
+        <MudButton Variant="Variant.Filled" class="mt-6" Color="Color.Primary" OnClick="Submit" Disabled="@(!_form.IsValid)">Registrera</MudButton>
+    </MudForm>
+</MudPaper>
+
+@code {
+    private RegisterModel _model = new();
+    private MudForm? _form;
+    private bool _showPassword = false;
+    private bool _showConfirmPassword = false;
+
+    private void TogglePasswordVisibility() => _showPassword = !_showPassword;
+    private void ToggleConfirmPasswordVisibility() => _showConfirmPassword = !_showConfirmPassword;
+
+    private async Task Submit()
+    {
+        if (_form is not null)
+        {
+            await _form.Validate();
+
+            if (_form.IsValid)
+            {
+                await OnValidSubmit();
+            }
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        var success = await UserService.RegisterAsync(_model);
+
+        if (success)
+        {
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            Snackbar.Add("Registreringen misslyckades!", Severity.Error, c => c.SnackbarVariant = Variant.Filled);
+        }
+    }
+
+}
