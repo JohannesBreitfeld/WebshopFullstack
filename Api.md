@@ -230,36 +230,448 @@ Deletes a specific customer.
 
 **Responses**:
 
-- **200 OK**: Customer deleted successfully.
-  - *Response Body*:
-    ```json
+- **204 No content**: Customer deleted successfully.
+- **404 Not Found**: Id matching with path parameter could not be found.
+- **500 Internal Server Error** – Something went wrong on the server.
+
+# 📘 Orders API
+
+Base URL: `/api/orders`
+
+## Endpoints
+
+---
+
+### 🔹 `GET /api/orders`
+
+Retrieve a list of all orders.
+
+#### Response `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "customerId": 4,
+    "dateTime": "2025-03-29T15:30:46.857Z",
+    "products": [
+      {
+        "productId": 5,
+        "productName": "Sako 90 Adventure",
+        "quantity": 1
+      }
+    ]
+  }
+]
+```
+
+---
+
+### 🔹 `POST /api/orders`
+
+Create a new order.
+
+#### Request Body
+```json
+{
+  "customerId": 4,
+  "products": [
     {
-      // Insert response body here
+      "productId": 5,
+      "quantity": 1
     }
-    ```
+  ]
+}
+```
 
-## Orders
-
-### <span style="color:blue">GET</span> /api/orders
-
-**Description**:  
-Retrieves a list of orders.
-
-**Responses**:
-
-- **200 OK**: Successfully retrieved list.
-  - *Response Body*:
-    ```json
+#### Response `201 Created`
+```json
+{
+  "id": 3,
+  "customerId": 4,
+  "dateTime": "2025-03-31T11:03:16.338Z",
+  "products": [
     {
-      // Insert response body here
+      "productId": 5,
+      "productName": "Sako 90 Adventure",
+      "quantity": 1
     }
-    ```
+  ]
+}
+```
 
-### <span style="color:green">POST</span> /api/orders
+#### Response `400 Bad Request`
+```json
+{
+  "message": "Failed to create order"
+}
+```
 
-**Description**:  
-Creates a new order.
+---
 
-**Request Body**:
+### 🔹 `GET /api/orders/{orderId}`
 
-- `customerId` (integer): ID of the customer placing the order
+Retrieve a single order by order ID.
+
+#### Parameters
+- `orderId` (integer) – The ID of the order.
+
+#### Response `200 OK`
+```json
+{
+  "id": 2,
+  "customerId": 4,
+  "dateTime": "2025-03-31T09:58:12.967Z",
+  "products": [
+    {
+      "productId": 5,
+      "productName": "Sako 90 Adventure",
+      "quantity": 1
+    }
+  ]
+}
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Could not find order with id 99"
+}
+```
+
+---
+
+### 🔹 `GET /api/orders/by-customer/{customerId}`
+
+Retrieve all orders placed by a specific customer.
+
+#### Parameters
+- `customerId` (integer) – The ID of the customer.
+
+#### Response `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "customerId": 4,
+    "dateTime": "2025-03-29T15:30:46.857Z",
+    "products": [
+      {
+        "productId": 5,
+        "productName": "Sako 90 Adventure",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "customerId": 4,
+    "dateTime": "2025-03-31T11:03:16.338Z",
+    "products": [
+      {
+        "productId": 4,
+        "productName": "Mauser M25 Max Kulgevär",
+        "quantity": 1
+      }
+    ]
+  }
+]
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Could not find any orders with for customer id 99"
+}
+```
+# 📘 Product Categories API
+
+Base URL: `/api/productcategories`
+
+## Endpoints
+
+---
+
+### 🔹 `GET /api/productcategories`
+
+Retrieve a list of all product categories.
+
+#### Response `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "name": "Rifles"
+  },
+  {
+    "id": 2,
+    "name": "Scopes"
+  }
+]
+```
+
+---
+
+### 🔹 `GET /api/productcategories/{id}`
+
+Retrieve a single product category by ID.
+
+#### Parameters
+- `id` (integer) – The ID of the category.
+
+#### Response `200 OK`
+```json
+{
+  "id": 1,
+  "name": "Rifles"
+}
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Product category with id 99 not found"
+}
+```
+
+---
+
+### 🔹 `POST /api/productcategories`
+
+Create a new product category.
+
+#### Request Body
+```json
+{
+  "name": "Ammunition"
+}
+```
+
+#### Response `201 Created`
+```json
+{
+  "id": 3,
+  "name": "Ammunition"
+}
+```
+
+#### Response `400 Bad Request`
+```json
+{
+  "message": "Failed to create product category"
+}
+```
+
+---
+
+### 🔹 `PUT /api/productcategories/{id}`
+
+Update an existing product category.
+
+#### Parameters
+- `id` (integer) – The ID of the category to update.
+
+#### Request Body
+```json
+{
+  "name": "Updated Category Name"
+}
+```
+
+#### Response `200 OK`
+```json
+{
+  "id": 2,
+  "name": "Updated Category Name"
+}
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Category with id 99 not found"
+}
+```
+
+---
+
+### 🔹 `DELETE /api/productcategories/{id}`
+
+Delete a product category by ID.
+
+#### Parameters
+- `id` (integer) – The ID of the category to delete.
+
+#### Response `204 No Content`
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Category with id 99 not found"
+}
+```
+# 📘 Products API
+
+Base URL: `/api/products`
+
+## Endpoints
+
+---
+
+### 🔹 `GET /api/products`
+
+Retrieve a list of all products.
+
+#### Response `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "name": "Sako 90 Adventure",
+    "category": "Rifles",
+    "price": 3000
+  },
+  {
+    "id": 2,
+    "name": "Mauser M25",
+    "category": "Rifles",
+    "price": 2500
+  }
+]
+```
+
+---
+
+### 🔹 `GET /api/products/{id}`
+
+Retrieve a single product by ID.
+
+#### Parameters
+- `id` (integer) – The ID of the product.
+
+#### Response `200 OK`
+```json
+{
+  "id": 1,
+  "name": "Sako 90 Adventure",
+  "category": "Rifles",
+  "price": 3000
+}
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Product with id 99 not found"
+}
+```
+
+---
+
+### 🔹 `GET /api/products/by-name/{name}`
+
+Retrieve a product by its name.
+
+#### Parameters
+- `name` (string) – The name of the product.
+
+#### Response `200 OK`
+```json
+{
+  "id": 1,
+  "name": "Sako 90 Adventure",
+  "category": "Rifles",
+  "price": 3000
+}
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Product with name Sako 90 Adventure not found"
+}
+```
+
+---
+
+### 🔹 `POST /api/products`
+
+Create a new product.
+
+#### Request Body
+```json
+{
+  "name": "Sako 90 Adventure",
+  "category": "Rifles",
+  "price": 3000
+}
+```
+
+#### Response `201 Created`
+```json
+{
+  "id": 3,
+  "name": "Sako 90 Adventure",
+  "category": "Rifles",
+  "price": 3000
+}
+```
+
+#### Response `400 Bad Request`
+```json
+{
+  "message": "Failed to create product"
+}
+```
+
+---
+
+### 🔹 `PUT /api/products/{id}`
+
+Update an existing product by ID.
+
+#### Parameters
+- `id` (integer) – The ID of the product to update.
+
+#### Request Body
+```json
+{
+  "name": "Updated Sako 90 Adventure",
+  "category": "Rifles",
+  "price": 3500
+}
+```
+
+#### Response `200 OK`
+```json
+{
+  "id": 1,
+  "name": "Updated Sako 90 Adventure",
+  "category": "Rifles",
+  "price": 3500
+}
+```
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Product with id 99 not found"
+}
+```
+
+---
+
+### 🔹 `DELETE /api/products/{id}`
+
+Delete a product by ID.
+
+#### Parameters
+- `id` (integer) – The ID of the product to delete.
+
+#### Response `204 No Content`
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Product with id 99 not found"
+}
+```
