@@ -1,5 +1,10 @@
 # Webshop.API Specification
 
+````
+  Title: Webshop.API
+  Version: 1.0
+  ````
+
 ## Authentication
 
 ### <span style="color:green">POST</span> /api/auth/register
