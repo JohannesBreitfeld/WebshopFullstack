@@ -4,25 +4,29 @@
 @inject CartService CartService
 @inject IDialogService DialogService
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="!_isDarkMode" /> 
-<MudPopoverProvider /> 
-<MudDialogProvider /> 
+<MudThemeProvider Theme="@_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Color="Color.Primary">
-        <MudIconButton OnClick="DrawerToggle" Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Class="d-md-none" />
-        <MudText Typo="Typo.h6" Class="mr-4">Guns & Ammo</MudText>
+    <MudPaper Elevation="4" Class="p2" Style="background-color: #CBB994 ;">
+        <!-- Första raden: Logo och login/cart -->
+        <MudGrid AlignItems="Center" Class="header-background">
+            <!-- Kolumn 1: Tom för att balansera layouten -->
+            <MudItem xs="4" />
 
-        <!-- Center Navigation Links -->
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudContainer MaxWidth="MaxWidth.False" Class="d-flex justify-center">
-                <MudNavLink Href="/" Match="NavLinkMatch.All" Class="mx-auto">Hem</MudNavLink>
-                <MudNavLink Href="/shop" Match="NavLinkMatch.Prefix" Class="mx-auto">Shop</MudNavLink>
-                <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Class="mx-auto">Weather</MudNavLink>
-                @if(role == "Admin")
+            <!-- Kolumn 2: Logotyp centrerad -->
+            <MudItem xs="4" Class="d-flex justify-center">
+                <img src="Media/SolidLogo.png" alt="Logo" style="height: 100px;" />
+            </MudItem>
+
+            <!-- Kolumn 3: Login och kundvagn till höger -->
+            <MudItem xs="4" Class="d-flex justify-end align-center gap-2">
+             
+                @if (role == "Admin")
                 {
-                    <MudMenu Icon="@Icons.Material.Filled.AccountCircle">
+                    <MudMenu Icon="@Icons.Material.Filled.Settings">
                         <MudMenuItem>
                             <MudNavLink Href="/customers">Alla kunder</MudNavLink>
                         </MudMenuItem>
@@ -32,70 +36,70 @@
                         <MudMenuItem>
                             <MudNavLink Href="/products">Alla produkter</MudNavLink>
                         </MudMenuItem>
+
                     </MudMenu>
                 }
-           
-            </MudContainer>
-        </MudHidden>
+                <MudMenu Icon="@Icons.Material.Filled.AccountCircle">
+                    @if (isAuthenticated)
+                    {
+                        <MudMenuItem><MudNavLink OnClick="@Logout">Logga ut</MudNavLink></MudMenuItem>
+                    }
+                    else
+                    {
+                        <MudMenuItem><MudNavLink Href="/Login">Logga in</MudNavLink></MudMenuItem>
+                        <MudMenuItem><MudNavLink Href="/Register">Registrera ny kund</MudNavLink></MudMenuItem>
+                    }
+                    @if (role == "Customer")
+                    {
+                        <MudMenuItem><MudNavLink Href="/Profile">Min profil</MudNavLink></MudMenuItem>
+                    }
 
-        <MudSpacer />
-        @if(@role is not null)
-        {
-            if(role == "Admin")
-            {
-                <MudText>Inloggad som admin</MudText>
-            }
-            else if(@role == "Customer")
-            {
-                if(customerData is not null)
+                </MudMenu>
+
+                <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
+                               OnClick="@ShowCart"
+                               Color="Color.Inherit">
+                    <MudBadge BadgeColor="Color.Secondary" Content="@numberOfCartItems" />
+                </MudIconButton>
+
+            </MudItem>
+        </MudGrid>
+
+        <!-- Andra raden: Meny centrerad -->
+        <MudGrid>
+            <MudItem xs="4"></MudItem>
+
+            <MudItem xs="4" Class="d-flex justify-center gap-4">
+                <MudNavLink Href="/" Match="NavLinkMatch.All"
+                            Class="d-flex justify-center align-center px-4 py-2"
+                            Style="height: 100%;">
+                    Hem
+                </MudNavLink>
+
+                <MudNavLink Href="/shop" Match="NavLinkMatch.Prefix"
+                            Class="d-flex justify-center align-center px-4 py-2"
+                            Style="height: 100%;">
+                    Shop
+                </MudNavLink>
+            </MudItem>
+
+            <MudItem xs="4" Class="d-flex justify-end align-center px-4 py-2">
+                @if (role is not null)
                 {
-                    <MudButton OnClick="GoToProfile">Inloggad som @customerData.FirstName @customerData.LastName</MudButton>
+                    if (role == "Admin")
+                    {
+                        <MudText>Inloggad som admin</MudText>
+                    }
+                    else if (role == "Customer" && customerData is not null)
+                    {
+                        <MudButton OnClick="GoToProfile">
+                            Inloggad som @customerData.FirstName @customerData.LastName
+                        </MudButton>
+                    }
                 }
-            }
-        }
-
-        <!-- Conditional Login/Logout Button -->
-        @if (isAuthenticated)
-        {
-            <MudButton Color="Color.Secondary" OnClick="@Logout" Class="d-none d-md-flex">
-                Logga ut
-            </MudButton>
-        }
-        else
-        {
-            <MudButton OnClick="GoToLogin" Color="Color.Secondary" Class="d-none d-md-flex">
-                Logga in
-            </MudButton>
-        }
-        <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
-        OnClick="@ShowCart"
-        Color="Color.Inherit">
-            <MudBadge BadgeColor="Color.Secondary" Content="@numberOfCartItems" />
-        </MudIconButton>
-    </MudAppBar>
-
-    <MudDrawer Open="@_drawerOpen" OnClose="CloseDrawer" Class="d-md-none" Anchor="Anchor.Left">
-        <MudNavMenu>
-            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-            <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
-            <MudNavLink Href="/weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
-
-            <!-- Conditional Login/Logout Button in Drawer -->
-            @if (isAuthenticated)
-            {
-                <MudNavLink OnClick="@Logout" Icon="@Icons.Material.Filled.Logout">Logga ut</MudNavLink>
-            }
-            else
-            {
-                <MudNavLink Href="/login" Icon="@Icons.Material.Filled.Login">Logga in</MudNavLink>
-            }
-            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
-            OnClick="@ShowCart"
-            Color="Color.Inherit">
-                <MudBadge BadgeColor="Color.Secondary" Content="@CartService.Items.Count" />
-            </MudIconButton>
-        </MudNavMenu>
-    </MudDrawer>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
 
     <MudDrawer @bind-Open="_cartOpen" Anchor="Anchor.Right" Elevation="4" Width="300px" ClipMode="DrawerClipMode.Always">
         <MudDrawerHeader>Kundvagn</MudDrawerHeader>
@@ -153,8 +157,6 @@
 </div>
 
 @code {
-    private bool _drawerOpen = false;
-    private bool _isDarkMode = true;
     private MudTheme? _theme = null;
     private CustomerResponse? customerData;
     private string? role;
@@ -186,16 +188,10 @@
     protected override void OnInitialized()
     {
         _theme = new()
-        {
-            PaletteLight = _lightPalette,
-            LayoutProperties = new LayoutProperties()
-        };
-    }
-
-    private void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-        StateHasChanged();
+            {
+                PaletteLight = _lightPalette,
+                LayoutProperties = new LayoutProperties()
+            };
     }
 
     private void ShowCart()
@@ -207,20 +203,15 @@
         await CartService.ClearCartAsync();
     }
 
-    private void DarkModeToggle()
-    {
-        _isDarkMode = !_isDarkMode;
-    }
-
     private readonly PaletteLight _lightPalette = new()
-    {
-        Black = "#110e2d",
-        AppbarText = "#424242",
-        AppbarBackground = "rgba(255,255,255,0.8)",
-        DrawerBackground = "#ffffff",
-        GrayLight = "#e8e8e8",
-        GrayLighter = "#f9f9f9",
-    };
+        {
+            Black = "#110e2d",
+            AppbarText = "#424242",
+            AppbarBackground = "rgba(255,255,255,0.8)",
+            DrawerBackground = "#ffffff",
+            GrayLight = "#e8e8e8",
+            GrayLighter = "#f9f9f9",
+        };
 
     private async Task Logout()
     {
@@ -234,11 +225,11 @@
 
     private async Task PlaceOrder()
     {
-        if(customerData is null)
+        if (customerData is null)
         {
             return;
         }
-        if(CartService.Items is null || CartService.Items.Count == 0)
+        if (CartService.Items is null || CartService.Items.Count == 0)
         {
             return;
         }
@@ -251,12 +242,6 @@
         }
     }
 
-
-    public string DarkLightModeButtonIcon => _isDarkMode switch
-    {
-        true => Icons.Material.Rounded.AutoMode,
-        false => Icons.Material.Outlined.DarkMode,
-    };
 }
 
 
