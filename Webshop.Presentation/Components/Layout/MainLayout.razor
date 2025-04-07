@@ -23,45 +23,64 @@
 
             <!-- Kolumn 3: Login och kundvagn till höger -->
             <MudItem xs="4" Class="d-flex justify-end align-center gap-2">
-             
+
                 @if (role == "Admin")
                 {
-                    <MudMenu Icon="@Icons.Material.Filled.Settings">
-                        <MudMenuItem>
-                            <MudNavLink Href="/customers">Alla kunder</MudNavLink>
-                        </MudMenuItem>
-                        <MudMenuItem>
-                            <MudNavLink Href="/order-overview">Alla ordrar</MudNavLink>
-                        </MudMenuItem>
-                        <MudMenuItem>
-                            <MudNavLink Href="/products">Alla produkter</MudNavLink>
-                        </MudMenuItem>
+                    <MudTooltip Text="Admin">
+                        <MudMenu Icon="@Icons.Material.Filled.Settings">
+                            <MudMenuItem>
+                                <MudNavLink Href="/customers">Alla kunder</MudNavLink>
+                            </MudMenuItem>
+                            <MudMenuItem>
+                                <MudNavLink Href="/order-overview">Alla ordrar</MudNavLink>
+                            </MudMenuItem>
+                            <MudMenuItem>
+                                <MudNavLink Href="/products">Alla produkter</MudNavLink>
+                            </MudMenuItem>
+
+                        </MudMenu>
+                    </MudTooltip>
+                }
+                <MudTooltip Text="Profil">
+                    <MudMenu Icon="@Icons.Material.Filled.AccountCircle">
+                        @if (isAuthenticated)
+                        {
+                            <MudMenuItem><MudNavLink OnClick="@Logout">Logga ut</MudNavLink></MudMenuItem>
+                        }
+                        else
+                        {
+                            <MudMenuItem><MudNavLink Href="/Login">Logga in</MudNavLink></MudMenuItem>
+                            <MudMenuItem><MudNavLink Href="/Register">Registrera ny kund</MudNavLink></MudMenuItem>
+                        }
+                        @if (role == "Customer")
+                        {
+                            <MudMenuItem><MudNavLink Href="/Profile">Min profil</MudNavLink></MudMenuItem>
+                        }
 
                     </MudMenu>
-                }
-                <MudMenu Icon="@Icons.Material.Filled.AccountCircle">
-                    @if (isAuthenticated)
+                </MudTooltip>
+                <div class="me-6">
+                    @if (CartService.Items.Count > 0)
                     {
-                        <MudMenuItem><MudNavLink OnClick="@Logout">Logga ut</MudNavLink></MudMenuItem>
+                        <MudTooltip Text="Kundvagn">
+                            <MudBadge Content="@CartService.Items.Count"
+                                      Color="Color.Secondary"
+                                      Overlap="true">
+                                <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
+                                               OnClick="@ShowCart"
+                                               Color="Color.Inherit" />
+                            </MudBadge>
+                        </MudTooltip>
                     }
                     else
                     {
-                        <MudMenuItem><MudNavLink Href="/Login">Logga in</MudNavLink></MudMenuItem>
-                        <MudMenuItem><MudNavLink Href="/Register">Registrera ny kund</MudNavLink></MudMenuItem>
+                        <MudTooltip Text="Kundvagn">
+                            <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
+                                           OnClick="@ShowCart"
+                                           Color="Color.Inherit" />
+                        </MudTooltip>
                     }
-                    @if (role == "Customer")
-                    {
-                        <MudMenuItem><MudNavLink Href="/Profile">Min profil</MudNavLink></MudMenuItem>
-                    }
-
-                </MudMenu>
-
-                <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
-                               OnClick="@ShowCart"
-                               Color="Color.Inherit">
-                    <MudBadge BadgeColor="Color.Secondary" Content="@CartService.Items.Count" />
-                </MudIconButton>
-
+                </div>
             </MudItem>
         </MudGrid>
 
@@ -132,7 +151,7 @@
             }
             else
             {
-                <MudText Typo="Typo.body1" >Du måste vara inloggad för att slutföra din order.</MudText>
+                <MudText Typo="Typo.body1">Du måste vara inloggad för att slutföra din order.</MudText>
                 <MudButton Color="Color.Primary" Class="my-3" Variant="Variant.Filled" OnClick="GoToLogin">
                     Logga in
                 </MudButton>
