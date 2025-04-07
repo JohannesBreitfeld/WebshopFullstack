@@ -9,8 +9,8 @@
 
 @if (Role == "Admin")
 {
-    <MudDataGrid T="ProductModel" Readonly="false" Items="@AllProducts" SortMode="SortMode.Multiple" QuickFilter="@_quickFilter"
-    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" CommittedItemChanges="@CommittedItemChanges" CanceledEditingItem="@CancelledItemChanges" @ref="MudDataGridRef">
+    <MudDataGrid T="ProductModel" Readonly="false" Items="@AllProducts" SortMode="SortMode.Multiple" QuickFilter="@_quickFilter" Elevation="4"
+    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" CommittedItemChanges="@CommittedItemChanges" CanceledEditingItem="@CancelledItemChanges" @ref="MudDataGridRef" Breakpoint="Breakpoint.Md">
         <ToolBarContent>
             <MudText Typo="Typo.h6">Products</MudText>
             <MudSpacer />
@@ -30,9 +30,18 @@
                 </EditTemplate>
             </TemplateColumn>
             <PropertyColumn Property="x => x.Id" Editable="false" Title="Produktnummer"/>
-            <PropertyColumn Property="x => x.Name" />
-            <PropertyColumn Property="x => x.Price" />
-            <PropertyColumn Property="x => x.Description" Sortable="false" />
+            <PropertyColumn Property="x => x.Name" Title="Produktnamn"/>
+            <PropertyColumn Property="x => x.Price" Title="Pris"/>
+            <TemplateColumn Sortable="false" >
+                <CellTemplate>
+                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-height: 300px; max-width: 0px">
+                        @context.Item.Description
+                    </div>
+                </CellTemplate>
+                <EditTemplate>
+                    <MudTextField Label="Beskrivning" @bind-Value="@context.Item.Description" />
+                </EditTemplate>
+            </TemplateColumn>   
             <TemplateColumn Title="Kategori">
                 <CellTemplate>
                     @{
