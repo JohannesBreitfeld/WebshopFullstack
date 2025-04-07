@@ -29,4 +29,27 @@ Access the full API documentation here: [API documentation](/Api.md)
 
 ---
 
-✅ You’re all set! Enjoy exploring the Webshop 🚀
+## 🔐 Test Accounts
+<div style="background-color:#3a3a3a; color:#ffffff; padding:1em; border-radius:8px;">
+👤 <strong>Administrator</strong>
+<strong>Email:</strong> <code>Admin@example.com</code>
+
+🔒 <strong>Password:</strong> <code>Admin123!</code>
+
+🛠️ Full access to manage customers, products, and orders
+
+</div> <br/> <div style="background-color:#3a3a3a; color:#ffffff; padding:1em; border-radius:8px;">
+👥 <strong>Customer with orders</strong>
+<strong>Email:</strong> <code>string@string.string</code>
+
+🔒 <strong>Password:</strong> <code>Password123!</code>
+
+📦 Can view order history and edit profile
+
+</div> <br/> <div style="background-color:#3a3a3a; color:#ffffff; padding:1em; border-radius:8px;">
+🧾 <strong>Create your own account</strong>
+Register directly via the Register page
+
+- All new accounts are automatically assigned the <strong>Customer</strong> role
+
+</div>
