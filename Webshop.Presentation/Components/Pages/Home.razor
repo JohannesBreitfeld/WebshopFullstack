@@ -1,26 +1,30 @@
 ﻿@page "/"
-@inject CustomAuthStateProvider AuthStateProvider
-@inject NavigationManager Navigation
 
-<PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 9 Template!</MudText>
+<MudCarousel Class="mud-width-full mb-6" Style="height:600px;" ShowArrows="true" ShowBullets="true" EnableSwipeGesture="@true" AutoCycle="true" TData="object">
+    <MudCarouselItem Transition="Transition.Fade">
+        <div class="d-flex flex-column justify-center align-center" style="height:100%; background-image: url('/Media/carousel1.jpg'); background-size: cover; background-repeat: no-repeat; background-position: center;">
+           
+                <MudText Class="mb-10" Typo="Typo.h3" Style="color: white;">Allt för din hund!</MudText>
+                <MudButton Class="mt-10" Variant="Variant.Filled" Color="Color.Primary" Href="/shop">Utforska våra produkter</MudButton>
+           
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="Transition.Fade">
+        <div class="d-flex flex-column justify-center align-center" style="height:100%; background-image: url('/Media/carousel2.jpg'); background-size: cover; background-repeat: no-repeat; background-position: center;">
+            <MudText Class="mb-10" Typo="Typo.h3" Style="color: white;">Allt för en lyckad jakt!</MudText>
+            <MudButton Class="mt-10" Variant="Variant.Filled" Color="Color.Primary" Href="/shop">Utforska våra produkter</MudButton>
+        </div>
+    </MudCarouselItem>
+    <MudCarouselItem Transition="Transition.Fade">
+        <div class="d-flex flex-column justify-center align-center" style="height:100%; background-image: url('/Media/carousel3.png'); background-size: cover; background-repeat: no-repeat; background-position: center;">
 
-<MudAlert Severity="Severity.Normal">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
-
-<MudButton OnClick="Logout">Logout</MudButton>
+            <MudText Class="mb-10" Typo="Typo.h3" Style="color: white;">Allt för att lyckas med dina troféer!</MudText>
+            <MudButton Class="mt-10" Variant="Variant.Filled" Color="Color.Primary" Href="/shop">Utforska våra produkter</MudButton>
+        </div>
+    </MudCarouselItem>
+</MudCarousel>
 
 @code{
-    private async Task Logout()
-    {
-        await AuthStateProvider.Logout();
-        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-        
-    }
+
 }
