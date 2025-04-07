@@ -59,7 +59,7 @@
                 <MudIconButton Icon="@Icons.Material.Filled.ShoppingCart"
                                OnClick="@ShowCart"
                                Color="Color.Inherit">
-                    <MudBadge BadgeColor="Color.Secondary" Content="@numberOfCartItems" />
+                    <MudBadge BadgeColor="Color.Secondary" Content="@CartService.Items.Count" />
                 </MudIconButton>
 
             </MudItem>
@@ -110,13 +110,14 @@
             {
                 <MudPaper Class="p-2 mb-2">
                     <MudText>@item.Name x @item.Quantity</MudText>
-                    <MudText Typo="Typo.caption">@($"{item.Price * item.Quantity}")</MudText>
+                    <MudText Typo="Typo.caption">@($"{item.Price * item.Quantity} kr")</MudText>
                 </MudPaper>
             }
 
             <MudDivider Class="my-2" />
-            <MudText Typo="Typo.subtitle1">Totalt: @CartService.Total:C</MudText>
-
+            <MudText Typo="Typo.subtitle1">Totalt: @CartService.Total kr</MudText>
+            <MudSpacer></MudSpacer>
+            <MudSpacer></MudSpacer>
             <MudButton Color="Color.Error" Variant="Variant.Outlined" Class="mt-2" OnClick="ClearCart">
                 Töm kundvagnen
             </MudButton>
@@ -125,14 +126,14 @@
 
             @if (isAuthenticated)
             {
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="mt-2" OnClick="PlaceOrder">
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="my-3" OnClick="PlaceOrder">
                     Slutför beställning
                 </MudButton>
             }
             else
             {
-                <MudText Typo="Typo.body1" Class="mt-2">Du måste vara inloggad för att slutföra din order.</MudText>
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="GoToLogin">
+                <MudText Typo="Typo.body1" >Du måste vara inloggad för att slutföra din order.</MudText>
+                <MudButton Color="Color.Primary" Class="my-3" Variant="Variant.Filled" OnClick="GoToLogin">
                     Logga in
                 </MudButton>
             }
