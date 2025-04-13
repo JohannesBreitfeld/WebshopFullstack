@@ -1,7 +1,7 @@
 # 🛒 Webshop Project
 
 ## 📘 API Documentation  
-Access the full API documentation here: [API documentation](/Api.md)
+Access the full API documentation here: [API documentation](/APIDocs/Api.md)
 
 ---
 
