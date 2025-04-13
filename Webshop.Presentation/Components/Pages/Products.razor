@@ -128,9 +128,11 @@
     }
     private async Task CommittedItemChanges(ProductModel item)
     {
+        var token = await AuthStateProvider.GetAuthTokenAsync();
+
         if (item.Id == 0)
         {
-            var model = await ProductService.AddProductAsync(item);
+            var model = await ProductService.AddProductAsync(item, token);
             if (model != null)
             {
                 Snackbar.Add($"{item.Name} har lagt till med produktnummer {model.Id}!", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
@@ -145,7 +147,7 @@
         {
 
 
-            var success = await ProductService.UpdateAsync(item);
+            var success = await ProductService.UpdateAsync(item, token);
             if (success)
             {
                 Snackbar.Add($"Produktnummer {item.Id} har uppdaterats!", Severity.Success, c => c.SnackbarVariant = Variant.Filled);
@@ -181,6 +183,10 @@
 
     private void CancelledItemChanges(ProductModel product)
     {
+        if(product is null)
+        {
+            return;
+        }
         if (product.Id == 0)
         {
             var productList = AllProducts.ToList();

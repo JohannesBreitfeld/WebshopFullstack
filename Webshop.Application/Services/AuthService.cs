@@ -78,19 +78,24 @@ public class AuthService : IAuthService
     private string GenerateJwtToken(ApplicationUser user, string role)
     {
         var key = Encoding.UTF8.GetBytes(_configuration["JwtSettings:Secret"]!);
+        var issuer = _configuration["JwtSettings:Issuer"];
+        var audience = _configuration["JwtSettings:Audience"];
+
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-            new Claim(ClaimTypes.Role, role)
-        };
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email!),
+        new Claim(ClaimTypes.Role, role)
+    };
 
         var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
             claims: claims,
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
         );
-
+        Console.WriteLine($"Generated JWT Token: {new JwtSecurityTokenHandler().WriteToken(token)}");
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
