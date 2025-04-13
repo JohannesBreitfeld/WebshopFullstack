@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.ServiceInterfaces;
 
@@ -43,6 +44,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody]CreateProductRequest request)
     {
         var response = await _service.CreateAsync(request);
@@ -53,6 +55,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateProduct([FromRoute]int id, [FromBody]UpdateProductRequest request)
     {
         var response = await _service.UpdateAsync(id, request);
@@ -63,6 +66,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProduct([FromRoute]int id)
     {
         var success = await _service.DeleteAsync(id);

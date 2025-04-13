@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.Responses;
 using Webshop.Presentation.Mapping;
@@ -23,30 +25,51 @@ public class ProductService
         return response?.MapToModels();
     }
 
-    public async Task<bool> UpdateAsync(ProductModel model)
+    public async Task<bool> UpdateAsync(ProductModel model, string token)
     {
         var id = model.Id;
-        var request = model.MapToUpdateRequest();
-        
-        var client = _httpClientFactory.CreateClient("API");
-        var response = await client.PutAsJsonAsync<UpdateProductRequest>($"api/products/{id}", request);
+        var updateRequest = model.MapToUpdateRequest();
 
-        return response.IsSuccessStatusCode ? true : false;
+        var request = new HttpRequestMessage(HttpMethod.Put, $"api/products/{id}")
+        {
+            Content = new StringContent(
+                JsonSerializer.Serialize(updateRequest),
+                Encoding.UTF8,
+                "application/json"
+            )
+        };
+
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var client = _httpClientFactory.CreateClient("API");
+        var response = await client.SendAsync(request);
+
+        return response.IsSuccessStatusCode;
     }
 
-    public async Task<ProductModel?> AddProductAsync(ProductModel model)
+    public async Task<ProductModel?> AddProductAsync(ProductModel model, string token)
     {
-        var request = model.MapToCreateRequest();
-        var client = _httpClientFactory.CreateClient("API");
-        var response = await client.PostAsJsonAsync<CreateProductRequest>($"api/products", request);
-        if (!response.IsSuccessStatusCode)
+        var createRequest = model.MapToCreateRequest();
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/products")
+
         {
-            return null;
+            Content = new StringContent(
+            JsonSerializer.Serialize(createRequest),
+             Encoding.UTF8,
+            "application/json"
+        )};
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var client = _httpClientFactory.CreateClient("API");
+        var response = await client.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var productResponse = await response.Content.ReadFromJsonAsync<ProductResponse>();
+            return productResponse?.MapToModel();
         }
 
-        var productResponse = await response.Content.ReadFromJsonAsync<ProductResponse>();
-
-        return productResponse?.MapToModel();
+        return null;
     }
 
 

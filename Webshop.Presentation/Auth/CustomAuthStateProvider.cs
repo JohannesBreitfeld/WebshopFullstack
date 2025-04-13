@@ -88,6 +88,12 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
         return null;
     }
+
+    public async Task<string?> GetAuthTokenAsync()
+    {
+        var tokenResult = await _localStorage.GetAsync<string>("authToken");
+        return tokenResult.Success ? tokenResult.Value : null;
+    }
 }
 
 

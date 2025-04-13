@@ -32,9 +32,13 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHttpClient("API", client =>
+builder.Services.AddHttpClient("API", (sp, client) =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
+    var config = sp.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(config["ApiBaseUrl"]);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    AllowAutoRedirect = false
 });
 
 // Register CustomAuthStateProvider as AuthenticationStateProvider
