@@ -144,6 +144,7 @@ Updates details of a specific customer.
 
 **Description**:  
 Deletes a specific customer.
+Authorization Required: JWT Token (Role: Admin)
 
 **Path Parameters**:
 

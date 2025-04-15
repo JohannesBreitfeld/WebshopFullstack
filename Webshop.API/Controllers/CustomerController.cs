@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Webshop.Application.DTOs.Requests;
 using Webshop.Application.ServiceInterfaces;
 
@@ -56,6 +57,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteCustomer(int id)
     {
         var deleted = await _service.DeleteAsync(id);

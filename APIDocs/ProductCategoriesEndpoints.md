@@ -53,6 +53,7 @@ Retrieve a single product category by ID.
 ### 🔹 `POST /api/productcategories`
 
 Create a new product category.
+Authorization Required: JWT Token (Role: Admin)
 
 #### Request Body
 ```json
@@ -81,6 +82,7 @@ Create a new product category.
 ### 🔹 `PUT /api/productcategories/{id}`
 
 Update an existing product category.
+Authorization Required: JWT Token (Role: Admin)
 
 #### Parameters
 - `id` (integer) – The ID of the category to update.
@@ -112,6 +114,7 @@ Update an existing product category.
 ### 🔹 `DELETE /api/productcategories/{id}`
 
 Delete a product category by ID.
+Authorization Required: JWT Token (Role: Admin)
 
 #### Parameters
 - `id` (integer) – The ID of the category to delete.
