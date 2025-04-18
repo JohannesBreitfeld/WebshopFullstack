@@ -30,5 +30,7 @@ public class RegisterModel
 
     [Compare(nameof(Password), ErrorMessage = "Lösenorden matchar inte")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    public string PhoneNumber { get; set; } = string.Empty;
 }
 

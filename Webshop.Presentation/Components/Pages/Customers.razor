@@ -17,6 +17,7 @@
                         <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<CustomerResponse, object>(x=>x.Id)">Kundnummer</MudTableSortLabel></MudTh>
                         <MudTh><MudTableSortLabel SortBy="new Func<CustomerResponse, object>(x=>x.LastName)">Namn</MudTableSortLabel></MudTh>
                         <MudTh>Email</MudTh>
+                        <MudTh>Telefonnummer</MudTh>
                         <MudTh>Gatuadress</MudTh>
                         <MudTh>Postnummer</MudTh>
                         <MudTh><MudTableSortLabel SortBy="new Func<CustomerResponse, object>(x=>x.City)">Stad</MudTableSortLabel></MudTh>
@@ -26,6 +27,7 @@
                         <MudTd>@context.Id</MudTd>
                         <MudTd>@context.FirstName @context.LastName</MudTd>
                         <MudTd>@context.Email</MudTd>
+                        <MudTd>@context.PhoneNumber</MudTd>
                         <MudTd>@context.StreetAdress</MudTd>
                         <MudTd>@context.PostalCode</MudTd>
                         <MudTd>@context.City</MudTd>

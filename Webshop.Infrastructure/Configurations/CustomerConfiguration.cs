@@ -24,6 +24,9 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(c => c.PhoneNumber)
+          .HasMaxLength(20);
+
         builder.HasIndex(c => c.Email).IsUnique();
 
         builder.HasMany(c => c.Orders)
