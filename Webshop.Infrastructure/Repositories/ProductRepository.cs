@@ -14,7 +14,7 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync() => await _context.Products.ToListAsync();
+    public async Task<IEnumerable<Product>> GetAllAsync() => await _context.Products.Where(p => p.SoftDeleted == false).ToListAsync();
 
     public async Task<Product?> GetByIdAsync(int id) => await _context.Products.FindAsync(id);
     

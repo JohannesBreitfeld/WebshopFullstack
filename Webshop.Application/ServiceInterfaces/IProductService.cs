@@ -11,4 +11,5 @@ public interface IProductService
     Task<ProductResponse?> CreateAsync(CreateProductRequest request);
     Task<ProductResponse?> UpdateAsync(int id, UpdateProductRequest request);
     Task<bool> DeleteAsync(int id);
+    Task<bool> SoftDeleteAsync(int id);
 }

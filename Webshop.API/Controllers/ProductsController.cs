@@ -65,6 +65,17 @@ public class ProductsController : ControllerBase
             : NotFound(new { message = $"Product with id {id} not found" });
     }
 
+    [HttpDelete("soft-delete/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> SoftDelete([FromRoute] int id)
+    {
+        var success = await _service.SoftDeleteAsync(id);
+
+        return success is true
+            ? NoContent()
+            : NotFound(new { message = $"Product with id {id} not found" });
+    }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProduct([FromRoute]int id)

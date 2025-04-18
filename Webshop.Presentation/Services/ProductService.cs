@@ -72,6 +72,16 @@ public class ProductService
         return null;
     }
 
+    public async Task<bool> SoftDeleteAsync(int id, string token)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"api/products/soft-delete/{id}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var client = _httpClientFactory.CreateClient("API");
+        var response = await client.SendAsync(request);
+
+        return response.IsSuccessStatusCode;
+    }
 
 
 
