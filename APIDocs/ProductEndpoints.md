@@ -148,7 +148,23 @@ Authorization Required: JWT Token (Role: Admin)
   "message": "Product with id 99 not found"
 }
 ```
+---
+### 🔹 `DELETE /api/products/soft-delete/{id}`
 
+Sets SoftDeleted proerty to true for product by ID.  
+Authorization Required: JWT Token (Role: Admin)
+
+#### Parameters
+- `id` (integer) – The ID of the product to soft delete.
+
+#### Response `204 No Content`
+
+#### Response `404 Not Found`
+```json
+{
+  "message": "Product with id 99 not found"
+}
+```
 ---
 
 ### 🔹 `DELETE /api/products/{id}`
