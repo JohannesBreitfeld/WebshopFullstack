@@ -14,6 +14,7 @@
             <MudTextField Label="Förnamn" @bind-Value="CustomerInfo.FirstName" Variant="Variant.Outlined" />
             <MudTextField Label="Efternamn" @bind-Value="CustomerInfo.LastName" Variant="Variant.Outlined" />
             <MudTextField Label="E-post" @bind-Value="CustomerInfo.Email" Variant="Variant.Outlined" Disabled="true" />
+            <MudTextField Label="Telefonnummer" @bind-Value="CustomerInfo.PhoneNumber" Variant="Variant.Outlined" />
             <MudTextField Label="Adress" @bind-Value="CustomerInfo.StreetAdress" Variant="Variant.Outlined" />
             <MudTextField Label="Postnummer" @bind-Value="CustomerInfo.PostalCode" Variant="Variant.Outlined" />
             <MudTextField Label="Stad" @bind-Value="CustomerInfo.City" Variant="Variant.Outlined" />
@@ -111,6 +112,7 @@
                         FirstName = customer.FirstName,
                         LastName = customer.LastName,
                         Email = customer.Email,
+                        PhoneNumber = customer.PhoneNumber,
                         StreetAdress = customer.StreetAdress,
                         PostalCode = customer.PostalCode,
                         City = customer.City

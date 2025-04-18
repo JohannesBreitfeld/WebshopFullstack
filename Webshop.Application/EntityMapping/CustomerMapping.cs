@@ -15,7 +15,8 @@ public static class CustomerMapping
             Email = request.Email,
             StreetAdress = request.StreetAdress,
             PostalCode = request.PostalCode,
-            City = request.City
+            City = request.City,
+            PhoneNumber = request.PhoneNumber
         };
     }
 
@@ -29,7 +30,8 @@ public static class CustomerMapping
             Email = customer.Email,
             StreetAdress = customer.StreetAdress,
             PostalCode = customer.PostalCode,
-            City = customer.City
+            City = customer.City,
+            PhoneNumber = customer.PhoneNumber
         };
     }
 
@@ -51,7 +53,8 @@ public static class CustomerMapping
             Email = request.Email,
             StreetAdress = request.StreetAdress,
             PostalCode = request.PostalCode,
-            City = request.City
+            City = request.City,
+            PhoneNumber = request.PhoneNumber
         };
     }
 }

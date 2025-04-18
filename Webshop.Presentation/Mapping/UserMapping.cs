@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Abstractions;
-using Webshop.Application.DTOs.Requests;
+﻿using Webshop.Application.DTOs.Requests;
 using Webshop.Application.DTOs.UserDTOs;
 using Webshop.Presentation.Models;
 
@@ -15,6 +14,7 @@ public static class UserMapping
             Customer = new CreateCustomerRequest()
             {
                 Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 StreetAdress = model.StreetAdress,
