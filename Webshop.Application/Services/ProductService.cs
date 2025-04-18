@@ -105,6 +105,28 @@ public class ProductService : IProductService
         }
     }
 
+    public async Task<bool> SoftDeleteAsync(int id)
+    {
+        try
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if(product is null)
+            {
+                return false;
+            }
+
+            product.SoftDeleted = true;
+            await _unitOfWork.SaveAsync();
+        
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product");
+            return false;
+        }
+    }
+
     public async Task<bool> DeleteAsync(int id)
 
     {

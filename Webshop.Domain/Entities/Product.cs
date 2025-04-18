@@ -14,4 +14,6 @@ public class Product
     public int? ProductCategoryId { get; set; }
     public ProductCategory ProductCategory { get; set; } = null!;
     public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
+
+    public bool SoftDeleted { get; set; } = false;
 }
