@@ -23,12 +23,11 @@ public class OrderService : IOrderService
     {
         try
         {
-            var productIds = request.Products.Select(p => p.ProductId).ToList();
-            var products = await Task.WhenAll(productIds.Select(id => _unitOfWork.Products.GetByIdAsync(id)));
+            var products = new List<Product>();
 
             foreach (var item in request.Products)
             {
-                var product = products.FirstOrDefault(p => p!.Id == item.ProductId);
+                var product = await _unitOfWork.Products.GetByIdAsync(item.ProductId);
                 if (product == null)
                 {
                     _logger.LogError($"Could not find Product with ID {item.ProductId}");
@@ -43,6 +42,7 @@ public class OrderService : IOrderService
 
                 product.StockBalance -= item.Quantity;
                 _unitOfWork.Products.Update(product);
+                products.Add(product);
             }
 
             var order = request.MapToOrder();
@@ -50,11 +50,9 @@ public class OrderService : IOrderService
             await _unitOfWork.Orders.AddAsync(order);
             await _unitOfWork.SaveAsync();
 
-            var response = order.MapToResponse();
-            
-            return response;
+            return order.MapToResponse();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating order");
             return null;
