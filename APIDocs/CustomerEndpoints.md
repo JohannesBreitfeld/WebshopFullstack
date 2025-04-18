@@ -17,6 +17,7 @@ Retrieves a list of customers.
         "firstName": "string",
         "lastName": "string",
         "email": "string",
+        "phoneNumber": "string",
         "streetAdress": "string",
         "postalCode": 0,
         "city": "string"
@@ -26,6 +27,7 @@ Retrieves a list of customers.
         "firstName": "string",
         "lastName": "string",
         "email": "string@string.com",
+        "phoneNumber": "string",
         "streetAdress": "string",
         "postalCode": 43933,
         "city": "string"
@@ -46,6 +48,7 @@ Creates a new customer.
     "firstName" (string): First name.
     "lastName" (string): Last name.
     "email" (string): Email address.
+    "phoneNumber" (string): Phone number.
     "streetAddress" (string): Street address.
     "postalCode" (integer): Postal code.
     "city" (string): City.
@@ -61,6 +64,7 @@ Creates a new customer.
         "firstName": "string",
         "lastName": "string",
         "email": "string",
+        "phoneNumber": "string",
         "streetAdress": "string",
         "postalCode": 0,
         "city": "string"
@@ -94,6 +98,7 @@ Retrieves details of a specific customer.
         "firstName": "string",
         "lastName": "string",
         "email": "string",
+        "phoneNumber": "string",
         "streetAdress": "string",
         "postalCode": 0,
         "city": "string"
@@ -117,6 +122,7 @@ Updates details of a specific customer.
     "firstName" (string): First name.
     "lastName" (string): Last name.
     "email" (string): Email address.
+    "phoneNumber" (string): Phone number.
     "streetAddress" (string): Street address.
     "postalCode" (integer): Postal code.
     "city" (string): City.
@@ -132,6 +138,7 @@ Updates details of a specific customer.
         "firstName": "string",
         "lastName": "string",
         "email": "string",
+        "phoneNumber": "string",
         "streetAdress": "string",
         "postalCode": 0,
         "city": "string"
