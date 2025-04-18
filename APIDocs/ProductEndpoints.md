@@ -151,7 +151,7 @@ Authorization Required: JWT Token (Role: Admin)
 ---
 ### 🔹 `DELETE /api/products/soft-delete/{id}`
 
-Sets SoftDeleted proerty to true for product by ID.  
+Sets SoftDeleted property to true for product by ID.  
 Authorization Required: JWT Token (Role: Admin)
 
 #### Parameters
