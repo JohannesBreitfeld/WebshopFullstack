@@ -5,8 +5,8 @@ namespace Webshop.Infrastructure.MongoDb.Models;
 
 public class MongoOrderProduct
 {
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string ProductId { get; set; } = string.Empty;
+    [BsonId]
+    public int ProductId { get; set; }
 
     public int Quantity { get; set; }
 }

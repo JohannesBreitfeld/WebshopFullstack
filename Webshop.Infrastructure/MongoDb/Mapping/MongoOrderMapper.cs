@@ -9,8 +9,8 @@ public static class MongoOrderMapper
     {
         return new Order
         {
-            Id = int.Parse(mongo.Id), 
-            CustomerId = int.Parse(mongo.Id),
+            Id = mongo.Id, 
+            CustomerId = mongo.Id,
             DateTime = mongo.DateTime,
             OrderProducts = mongo.OrderProducts.Select(op => op.MapToDomain(mongo.Id)).ToList()
         };
@@ -20,6 +20,7 @@ public static class MongoOrderMapper
     {
         return new MongoOrder
         {
+            Id = order.Id,
             CustomerId = order.CustomerId.ToString(),
             DateTime = order.DateTime,
             OrderProducts = order.OrderProducts.Select(op => op.MapToMongo()).ToList()

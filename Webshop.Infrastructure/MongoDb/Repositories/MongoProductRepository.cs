@@ -22,7 +22,7 @@ public class MongoProductRepository : IProductRepository
 
     public void Delete(Product product)
     {
-        _collection.DeleteOne(p => p.Id == product.Id.ToString());
+        _collection.DeleteOne(p => p.Id == product.Id);
     }
 
     public async Task<IEnumerable<Product>> GetAllAsync()
@@ -38,7 +38,7 @@ public class MongoProductRepository : IProductRepository
     public async Task<Product?> GetByIdAsync(int id)
     {
         var mongoProduct = await _collection
-            .Find(p => p.Id == id.ToString())
+            .Find(p => p.Id == id)
             .FirstOrDefaultAsync();
         return mongoProduct?.MapToDomain();
     }

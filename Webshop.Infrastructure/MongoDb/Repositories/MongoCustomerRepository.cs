@@ -23,7 +23,7 @@ public class MongoCustomerRepository : ICustomerRepository
 
     public async void Delete(Customer customer)
     {
-        await _collection.DeleteOneAsync(x => x.Id == customer.Id.ToString());
+        await _collection.DeleteOneAsync(x => x.Id == customer.Id);
     }
 
     public async Task<IEnumerable<Customer>> GetAllAsync()
@@ -41,7 +41,7 @@ public class MongoCustomerRepository : ICustomerRepository
 
     public async Task<Customer?> GetByIdAsync(int id)
     {
-        var mongoCustomer = await _collection.Find(x => x.Id == id.ToString()).FirstOrDefaultAsync();
+        var mongoCustomer = await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
         return mongoCustomer?.MapToDomain();
     }
 

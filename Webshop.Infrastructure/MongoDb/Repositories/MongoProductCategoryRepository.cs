@@ -22,7 +22,7 @@ public class MongoProductCategoryRepository : IProductCategoryRepository
 
     public void Delete(ProductCategory category)
     {
-        _collection.DeleteOne(c => c.Id == category.Id.ToString());
+        _collection.DeleteOne(c => c.Id == category.Id);
     }
 
     public async Task<IEnumerable<ProductCategory>> GetAllAsync()
@@ -40,7 +40,7 @@ public class MongoProductCategoryRepository : IProductCategoryRepository
     public async Task<ProductCategory?> GetByIdAsync(int id)
     {
        var mongoProductCategory = await _collection
-            .Find(c => c.Id == id.ToString())
+            .Find(c => c.Id == id)
             .FirstOrDefaultAsync();
        return mongoProductCategory?.MapToDomain(); 
     }
@@ -48,6 +48,6 @@ public class MongoProductCategoryRepository : IProductCategoryRepository
     public void Update(ProductCategory category)
     {
         var mongoProductCategory = category.MapToMongo();
-        _collection.ReplaceOne(c => c.Id == category.Id.ToString(), mongoProductCategory);
+        _collection.ReplaceOne(c => c.Id == category.Id, mongoProductCategory);
     }
 }

@@ -6,8 +6,7 @@ namespace Webshop.Infrastructure.MongoDb.Models;
 public class MongoCustomer
 {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; } = string.Empty;
+    public int Id { get; set; }
 
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

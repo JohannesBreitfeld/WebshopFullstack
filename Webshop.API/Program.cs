@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Webshop.Application.ServiceInterfaces;
@@ -78,6 +79,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<MigrateToMongo>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -121,18 +124,25 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var migrator = scope.ServiceProvider.GetRequiredService<MigrateToMongo>();
+//    await migrator.Migrate();
+//}
 
-static async Task SeedRoles(IServiceProvider serviceProvider)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string[] roleNames = { "Admin", "User" };
 
-    foreach (var roleName in roleNames)
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-    }
-}
+//static async Task SeedRoles(IServiceProvider serviceProvider)
+//{
+//    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+//    string[] roleNames = { "Admin", "User" };
+
+//    foreach (var roleName in roleNames)
+//    {
+//        if (!await roleManager.RoleExistsAsync(roleName))
+//        {
+//            await roleManager.CreateAsync(new IdentityRole(roleName));
+//        }
+//    }
+//}

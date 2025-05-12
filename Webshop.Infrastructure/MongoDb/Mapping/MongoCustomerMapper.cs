@@ -9,7 +9,7 @@ public static class MongoCustomerMapper
     {
         return new Customer
         {
-            Id = int.Parse(mongo.Id), 
+            Id = mongo.Id, 
             FirstName = mongo.FirstName,
             LastName = mongo.LastName,
             PhoneNumber = mongo.PhoneNumber,
@@ -25,7 +25,7 @@ public static class MongoCustomerMapper
     {
         return new MongoCustomer
         {
-            Id = domain.Id.ToString(),
+            Id = domain.Id,
             FirstName = domain.FirstName,
             LastName = domain.LastName,
             PhoneNumber = domain.PhoneNumber,

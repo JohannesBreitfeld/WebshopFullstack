@@ -10,16 +10,14 @@ public static class MongoProductMapper
     {
         return new Product
         {
-            Id = 0,
+            Id = mongo.Id,
             Name = mongo.Name,
             Price = mongo.Price,
             Description = mongo.Description,
             StockBalance = mongo.StockBalance,
             Status = (ProductStatus)mongo.Status,
             ImageUrl = mongo.ImageUrl,
-            ProductCategoryId = string.IsNullOrEmpty(mongo.ProductCategoryId)
-                ? (int?)null 
-                : int.Parse(mongo.ProductCategoryId),
+            ProductCategoryId = mongo.ProductCategoryId,
             SoftDeleted = mongo.SoftDeleted
         };
     }
@@ -28,13 +26,14 @@ public static class MongoProductMapper
     {
         return new MongoProduct
         {
+            Id = product.Id,
             Name = product.Name,
             Price = product.Price,
             Description = product.Description,
             StockBalance = product.StockBalance,
             Status = (int)product.Status,
             ImageUrl = product.ImageUrl,
-            ProductCategoryId = product.ProductCategoryId?.ToString(),
+            ProductCategoryId = product.ProductCategoryId,
             SoftDeleted = product.SoftDeleted
         };
     }

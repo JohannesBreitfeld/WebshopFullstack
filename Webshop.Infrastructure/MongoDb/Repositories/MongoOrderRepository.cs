@@ -48,7 +48,7 @@ public class MongoOrderRepository : IOrderRepository
     public async Task<Order?> GetByOrderIdAsync(int orderId)
     {
         var mongoOrder = await _collection
-            .Find(o => o.Id == orderId.ToString())
+            .Find(o => o.Id == orderId)
             .FirstOrDefaultAsync();
         return mongoOrder?.MapToDomain();
     }

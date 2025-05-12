@@ -5,12 +5,12 @@ namespace Webshop.Infrastructure.MongoDb.Mapping;
 
 public static class MongoOrderProductMapper
 {
-    public static OrderProduct MapToDomain(this MongoOrderProduct mongo,string orderId)
+    public static OrderProduct MapToDomain(this MongoOrderProduct mongo,int orderId)
     {
         return new OrderProduct
         {
-            OrderId = int.Parse(orderId),
-            ProductId = int.Parse(mongo.ProductId), 
+            OrderId = orderId,
+            ProductId = mongo.ProductId, 
             Quantity = mongo.Quantity
         };
     }
@@ -19,7 +19,7 @@ public static class MongoOrderProductMapper
     {
         return new MongoOrderProduct
         {
-            ProductId = op.ProductId.ToString(),
+            ProductId = op.ProductId,
             Quantity = op.Quantity
         };
     }

@@ -9,7 +9,7 @@ public static class MongoProductCategoryMapper
     {
         return new ProductCategory
         {
-            Id = int.Parse(mongo.Id),
+            Id = mongo.Id,
             Name = mongo.Name,
             Products = new List<Product>()
         };
@@ -19,7 +19,7 @@ public static class MongoProductCategoryMapper
     {
         return new MongoProductCategory
         {
-            Id = category.Id.ToString(),
+            Id = category.Id,
             Name = category.Name
         };
     }
