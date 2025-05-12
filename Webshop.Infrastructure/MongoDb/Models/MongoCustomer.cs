@@ -16,6 +16,4 @@ public class MongoCustomer
     public string StreetAdress { get; set; } = string.Empty;
     public int PostalCode { get; set; } 
     public string City { get; set; } = string.Empty;
-
-    public List<string> OrderIds { get; set; } = [];
 }

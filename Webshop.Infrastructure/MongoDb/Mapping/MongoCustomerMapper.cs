@@ -32,8 +32,7 @@ public static class MongoCustomerMapper
             Email = domain.Email,
             StreetAdress = domain.StreetAdress,
             PostalCode = domain.PostalCode,
-            City = domain.City,
-            OrderIds = domain.Orders.Select(o => o.Id.ToString()).ToList()
+            City = domain.City
         };
     }
 }

@@ -5,11 +5,12 @@ namespace Webshop.Infrastructure.MongoDb.Mapping;
 
 public static class MongoOrderProductMapper
 {
-    public static OrderProduct MapToDomain(this MongoOrderProduct mongo)
+    public static OrderProduct MapToDomain(this MongoOrderProduct mongo,string orderId)
     {
         return new OrderProduct
         {
-            ProductId = 0, // Sätt korrekt via Product-mappning
+            OrderId = int.Parse(orderId),
+            ProductId = int.Parse(mongo.ProductId), 
             Quantity = mongo.Quantity
         };
     }

@@ -17,7 +17,9 @@ public static class MongoProductMapper
             StockBalance = mongo.StockBalance,
             Status = (ProductStatus)mongo.Status,
             ImageUrl = mongo.ImageUrl,
-            ProductCategoryId = null, // Sätt korrekt separat
+            ProductCategoryId = string.IsNullOrEmpty(mongo.ProductCategoryId)
+                ? (int?)null 
+                : int.Parse(mongo.ProductCategoryId),
             SoftDeleted = mongo.SoftDeleted
         };
     }

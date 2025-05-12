@@ -9,10 +9,10 @@ public static class MongoOrderMapper
     {
         return new Order
         {
-            Id = 0, // Du kan hantera MongoDB-ID som string separat
-            CustomerId = 0, // Sätt korrekt via Customer
+            Id = int.Parse(mongo.Id), 
+            CustomerId = int.Parse(mongo.Id),
             DateTime = mongo.DateTime,
-            OrderProducts = mongo.OrderProducts.Select(MongoOrderProductMapper.ToDomain).ToList()
+            OrderProducts = mongo.OrderProducts.Select(op => op.MapToDomain(mongo.Id)).ToList()
         };
     }
 
@@ -22,7 +22,7 @@ public static class MongoOrderMapper
         {
             CustomerId = order.CustomerId.ToString(),
             DateTime = order.DateTime,
-            OrderProducts = order.OrderProducts.Select(MongoOrderProductMapper.ToMongo).ToList()
+            OrderProducts = order.OrderProducts.Select(op => op.MapToMongo()).ToList()
         };
     }
 }

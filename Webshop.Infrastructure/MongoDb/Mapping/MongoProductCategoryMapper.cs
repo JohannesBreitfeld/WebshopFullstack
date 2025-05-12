@@ -9,9 +9,9 @@ public static class MongoProductCategoryMapper
     {
         return new ProductCategory
         {
-            Id = 0,
+            Id = int.Parse(mongo.Id),
             Name = mongo.Name,
-            Products = new List<Product>() // Hämtas separat
+            Products = new List<Product>()
         };
     }
 
@@ -19,8 +19,8 @@ public static class MongoProductCategoryMapper
     {
         return new MongoProductCategory
         {
-            Name = category.Name,
-            ProductIds = category.Products.Select(p => p.Id.ToString()).ToList()
+            Id = category.Id.ToString(),
+            Name = category.Name
         };
     }
 }

@@ -1,35 +1,59 @@
 ﻿using MongoDB.Driver;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
+using Webshop.Infrastructure.MongoDb.Mapping;
+using Webshop.Infrastructure.MongoDb.Models;
 
 namespace Webshop.Infrastructure.MongoDb.Repositories;
 
 public class MongoProductRepository : IProductRepository
 {
-    private readonly IMongoCollection<Product> _collection;
+    private readonly IMongoCollection<MongoProduct> _collection;
 
     public MongoProductRepository(IMongoDatabase database)
     {
-        _collection = database.GetCollection<Product>("Products");
+        _collection = database.GetCollection<MongoProduct>("Products");
     }
     public async Task AddAsync(Product product)
     {
-        
-        
-        await _collection.InsertOneAsync(product);
-
+        var mongoProduct = product.MapToMongo();
+        await _collection.InsertOneAsync(mongoProduct);
     }
-        
-        
-        
 
-    public void Delete(Product product) => _collection.DeleteOne(p => p.Id == product.Id);
+    public void Delete(Product product)
+    {
+        _collection.DeleteOne(p => p.Id == product.Id.ToString());
+    }
 
-    public async Task<IEnumerable<Product>> GetAllAsync() => await _collection.Find(_ => true).ToListAsync();
+    public async Task<IEnumerable<Product>> GetAllAsync()
+    {
+        var mongoProducts = await _collection.Find(_ => true).ToListAsync();
+        var products = mongoProducts?
+            .Select(mp => mp.MapToDomain())
+            .ToList() 
+            ?? new List<Product>();
+        return products;
+    }
 
-    public async Task<Product?> GetByIdAsync(int id) => await _collection.Find(p => p.Id == id).FirstOrDefaultAsync();
+    public async Task<Product?> GetByIdAsync(int id)
+    {
+        var mongoProduct = await _collection
+            .Find(p => p.Id == id.ToString())
+            .FirstOrDefaultAsync();
+        return mongoProduct?.MapToDomain();
+    }
 
-    public async Task<Product?> GetByNameAsync(string name) => await _collection.Find(p => p.Name == name).FirstOrDefaultAsync();
+    public async Task<Product?> GetByNameAsync(string name)
+    {
+        var mongoProduct = await _collection
+            .Find(p => p.Name == name)
+            .FirstOrDefaultAsync();
+        return mongoProduct?.MapToDomain();
+    }
 
-    public void Update(Product product) => _collection.ReplaceOne(p => p.Id == product.Id, product);
+    public void Update(Product product)
+    {
+        var mongoProduct = product.MapToMongo();
+        _collection.ReplaceOne(p => p.Id == mongoProduct.Id, mongoProduct);
+    }
 }
