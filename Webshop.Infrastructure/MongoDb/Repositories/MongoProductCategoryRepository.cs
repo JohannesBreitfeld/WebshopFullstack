@@ -3,19 +3,24 @@ using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 using Webshop.Infrastructure.MongoDb.Mapping;
 using Webshop.Infrastructure.MongoDb.Models;
+using Webshop.Infrastructure.MongoDb.SequenceServices;
 
 namespace Webshop.Infrastructure.MongoDb.Repositories;
 
 public class MongoProductCategoryRepository : IProductCategoryRepository
 {
     private readonly IMongoCollection<MongoProductCategory> _collection;
+    private readonly SequenceService _sequenceService;
 
-    public MongoProductCategoryRepository(IMongoDatabase database)
+    public MongoProductCategoryRepository(IMongoDatabase database, SequenceService sequenceService)
     {
         _collection = database.GetCollection<MongoProductCategory>("ProductCategories");
+        _sequenceService = sequenceService;
     }
     public async Task AddAsync(ProductCategory category)
     {
+        var nextId = await _sequenceService.GetNextSequenceValueAsync("ProductCategories");
+        category.Id = nextId;
         var mongoProductCategory = category.MapToMongo();
         await _collection.InsertOneAsync(mongoProductCategory);
     }

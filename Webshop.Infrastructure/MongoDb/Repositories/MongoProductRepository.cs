@@ -3,19 +3,25 @@ using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 using Webshop.Infrastructure.MongoDb.Mapping;
 using Webshop.Infrastructure.MongoDb.Models;
+using Webshop.Infrastructure.MongoDb.SequenceServices;
 
 namespace Webshop.Infrastructure.MongoDb.Repositories;
 
 public class MongoProductRepository : IProductRepository
 {
     private readonly IMongoCollection<MongoProduct> _collection;
+    private readonly SequenceService _sequenceService;
 
-    public MongoProductRepository(IMongoDatabase database)
+    public MongoProductRepository(IMongoDatabase database, SequenceService sequenceService)
     {
         _collection = database.GetCollection<MongoProduct>("Products");
+        _sequenceService = sequenceService;
     }
+
     public async Task AddAsync(Product product)
     {
+        var nextId = await _sequenceService.GetNextSequenceValueAsync("Products");
+        product.Id = nextId;
         var mongoProduct = product.MapToMongo();
         await _collection.InsertOneAsync(mongoProduct);
     }
@@ -29,6 +35,7 @@ public class MongoProductRepository : IProductRepository
     {
         var mongoProducts = await _collection.Find(_ => true).ToListAsync();
         var products = mongoProducts?
+            .Where(mp => mp.SoftDeleted == false)
             .Select(mp => mp.MapToDomain())
             .ToList() 
             ?? new List<Product>();

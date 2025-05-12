@@ -3,20 +3,25 @@ using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
 using Webshop.Infrastructure.MongoDb.Mapping;
 using Webshop.Infrastructure.MongoDb.Models;
+using Webshop.Infrastructure.MongoDb.SequenceServices;
 
 namespace Webshop.Infrastructure.MongoDb.Repositories;
 
 public class MongoCustomerRepository : ICustomerRepository
 {
     private readonly IMongoCollection<MongoCustomer> _collection;
+    private readonly SequenceService _sequenceService;
 
-    public MongoCustomerRepository(IMongoDatabase database)
+    public MongoCustomerRepository(IMongoDatabase database, SequenceService sequenceService)
     {
         _collection = database.GetCollection<MongoCustomer>("Customers");
+        _sequenceService = sequenceService;
     }
 
     public async Task AddAsync(Customer customer)
     {
+        var nextId = await _sequenceService.GetNextSequenceValueAsync("Customers");
+        customer.Id = nextId;
         var mongoCustomer = customer.MapToMongo();
         await _collection.InsertOneAsync(mongoCustomer);
     }

@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using Webshop.Domain.Interfaces;
 using Webshop.Infrastructure.MongoDb;
 using Webshop.Infrastructure.MongoDb.Repositories;
+using Webshop.Infrastructure.MongoDb.SequenceServices;
 using Webshop.Infrastructure.MongoDb.UnitOfWork;
 
 namespace Webshop.Infrastructure;
@@ -32,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IProductCategoryRepository, MongoProductCategoryRepository>();
         services.AddScoped<IProductRepository, MongoProductRepository>();
         services.AddScoped<IUnitOfWork, MongoUnitOfWork>();
+        services.AddSingleton<SequenceService>();
 
         return services;
     }
