@@ -1,7 +1,7 @@
-﻿using Fullstack.Persistance.Data;
-using Webshop.Domain.Interfaces;
+﻿using Webshop.Domain.Interfaces;
+using Webshop.Infrastructure.SQL.Data;
 
-namespace Webshop.Infrastructure.UnitOfWork;
+namespace Webshop.Infrastructure.SQL.UnitOfWork;
 
 public class UnitOfWork : IUnitOfWork
 {

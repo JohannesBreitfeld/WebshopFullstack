@@ -13,6 +13,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.4" />
+    <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <Folder Include="SQL\Migrations\" />
   </ItemGroup>
 
 </Project>

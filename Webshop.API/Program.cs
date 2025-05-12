@@ -1,17 +1,16 @@
-using Fullstack.Persistance.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.Text;
 using Webshop.Application.ServiceInterfaces;
 using Webshop.Application.Services;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
-using Webshop.Infrastructure.Repositories;
-using Webshop.Infrastructure.UnitOfWork;
+using Webshop.Infrastructure;
+using Webshop.Infrastructure.SQL.Data;
+using Webshop.Infrastructure.SQL.Repositories;
+using Webshop.Infrastructure.SQL.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +25,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Register Unit of Work and Repositories
-builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+//builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+//builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+//builder.Services.AddScoped<IProductRepository, ProductRepository>();
+//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddMongoInfrastructure(builder.Configuration);
 
 // Register Services
 builder.Services.AddScoped<IProductService, ProductService>();

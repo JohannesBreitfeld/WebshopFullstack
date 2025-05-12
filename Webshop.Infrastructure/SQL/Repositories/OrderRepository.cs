@@ -1,9 +1,9 @@
-﻿using Fullstack.Persistance.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
+using Webshop.Infrastructure.SQL.Data;
 
-namespace Webshop.Infrastructure.Repositories;
+namespace Webshop.Infrastructure.SQL.Repositories;
 
 public class OrderRepository : IOrderRepository
 {
