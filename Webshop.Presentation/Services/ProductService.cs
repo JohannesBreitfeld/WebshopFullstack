@@ -25,6 +25,21 @@ public class ProductService
         return response?.MapToModels();
     }
 
+    public async Task<IEnumerable<ProductModel>?> GetByIdsAsync(GetProductsByIdsRequest request)
+    {
+        var client = _httpClientFactory.CreateClient("API");
+        var response = await client.PostAsJsonAsync("api/products/get-by-ids", request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var productsResponse = await response.Content.ReadFromJsonAsync<ProductsResponse>();
+
+        return productsResponse?.MapToModels();
+    }
+
     public async Task<bool> UpdateAsync(ProductModel model, string token)
     {
         var id = model.Id;

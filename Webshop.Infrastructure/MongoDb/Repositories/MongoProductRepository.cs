@@ -33,9 +33,10 @@ public class MongoProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        var mongoProducts = await _collection.Find(_ => true).ToListAsync();
+        var mongoProducts = await _collection
+            .Find(mp => mp.SoftDeleted == false)
+            .ToListAsync();
         var products = mongoProducts?
-            .Where(mp => mp.SoftDeleted == false)
             .Select(mp => mp.MapToDomain())
             .ToList() 
             ?? new List<Product>();
@@ -48,6 +49,19 @@ public class MongoProductRepository : IProductRepository
             .Find(p => p.Id == id)
             .FirstOrDefaultAsync();
         return mongoProduct?.MapToDomain();
+    }
+
+    public async Task<IEnumerable<Product>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        var filter = Builders<MongoProduct>.Filter.In(o => o.Id, ids);
+        var mongoProducts = await _collection
+            .Find(filter)
+            .ToListAsync();
+
+        return mongoProducts?
+            .Select(o => o.MapToDomain())
+            .ToList() 
+            ?? new List<Product>();
     }
 
     public async Task<Product?> GetByNameAsync(string name)

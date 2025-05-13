@@ -86,4 +86,11 @@ public class ProductsController : ControllerBase
             ? NoContent()
             : NotFound(new { message = $"Product with id {id} not found" });
     }
+
+    [HttpPost("get-by-ids")]
+    public async Task<IActionResult> GetByIds([FromBody]GetProductsByIdsRequest request)
+    {
+        var response = await _service.GetByIdsAsync(request);
+        return Ok(response);
+    }
 }

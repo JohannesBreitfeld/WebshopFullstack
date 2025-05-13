@@ -20,6 +20,7 @@ public static class MongoOrderProductMapper
         return new MongoOrderProduct
         {
             ProductId = op.ProductId,
+            
             Quantity = op.Quantity
         };
     }

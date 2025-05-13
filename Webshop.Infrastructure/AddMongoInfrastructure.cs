@@ -33,7 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IProductCategoryRepository, MongoProductCategoryRepository>();
         services.AddScoped<IProductRepository, MongoProductRepository>();
         services.AddScoped<IUnitOfWork, MongoUnitOfWork>();
-        services.AddSingleton<SequenceService>();
+        services.AddScoped<SequenceService>();
 
         return services;
     }

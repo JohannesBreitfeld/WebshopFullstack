@@ -30,7 +30,7 @@ public static class OrderMapping
             Products = order.OrderProducts.Select(op => new OrderProductResponse
             {
                 ProductId = op.ProductId,
-                ProductName = op.Product.Name,
+                //ProductName = op.Product.Name,
                 Quantity = op.Quantity
             }).ToList()
         };

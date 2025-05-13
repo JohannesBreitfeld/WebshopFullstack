@@ -150,4 +150,11 @@ public class ProductService : IProductService
             return false;
         }
     }
+
+    public async Task<ProductsResponse> GetByIdsAsync(GetProductsByIdsRequest request)
+    {
+        var ids = request.ProductsIds;
+        var products = await _unitOfWork.Products.GetByIdsAsync(ids);
+        return products.MapToResponse();
+    }
 }
