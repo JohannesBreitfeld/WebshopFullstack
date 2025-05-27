@@ -1,9 +1,9 @@
-﻿using Fullstack.Persistance.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
+using Webshop.Infrastructure.SQL.Data;
 
-namespace Webshop.Infrastructure.Repositories;
+namespace Webshop.Infrastructure.SQL.Repositories;
 
 public class ProductRepository : IProductRepository
 {
@@ -25,4 +25,9 @@ public class ProductRepository : IProductRepository
     public void Update(Product product) => _context.Products.Update(product);
     
     public void Delete(Product product) => _context.Products.Remove(product);
+
+    public Task<IEnumerable<Product>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        throw new NotImplementedException();
+    }
 }

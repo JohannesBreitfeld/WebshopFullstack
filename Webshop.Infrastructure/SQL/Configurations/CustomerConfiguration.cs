@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
-namespace Webshop.Infrastructure.Configurations;
+namespace Webshop.Infrastructure.SQL.Configurations;
 
 public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 {

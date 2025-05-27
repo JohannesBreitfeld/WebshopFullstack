@@ -9,4 +9,5 @@ public class OrderModel
     public DateTime DateTime { get; set; }
     public List<OrderProductResponse> Products { get; set; } = new();
     public bool ShowDetails = false;
+    public bool ProductsLoaded { get; set; }
 }

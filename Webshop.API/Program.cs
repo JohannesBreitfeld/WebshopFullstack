@@ -1,17 +1,17 @@
-using Fullstack.Persistance.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.Text;
 using Webshop.Application.ServiceInterfaces;
 using Webshop.Application.Services;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Interfaces;
-using Webshop.Infrastructure.Repositories;
-using Webshop.Infrastructure.UnitOfWork;
+using Webshop.Infrastructure;
+using Webshop.Infrastructure.SQL.Data;
+using Webshop.Infrastructure.SQL.Repositories;
+using Webshop.Infrastructure.SQL.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +26,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Register Unit of Work and Repositories
-builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+//builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+//builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+//builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+//builder.Services.AddScoped<IProductRepository, ProductRepository>();
+//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddMongoInfrastructure(builder.Configuration);
 
 // Register Services
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -78,6 +79,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<MigrateToMongo>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -121,18 +124,25 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
+//using (var scope = app.Services.CreateScope())
+//{
+//    var migrator = scope.ServiceProvider.GetRequiredService<MigrateToMongo>();
+//    await migrator.Migrate();
+//}
 
-static async Task SeedRoles(IServiceProvider serviceProvider)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string[] roleNames = { "Admin", "User" };
 
-    foreach (var roleName in roleNames)
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            await roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-    }
-}
+//static async Task SeedRoles(IServiceProvider serviceProvider)
+//{
+//    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+//    string[] roleNames = { "Admin", "User" };
+
+//    foreach (var roleName in roleNames)
+//    {
+//        if (!await roleManager.RoleExistsAsync(roleName))
+//        {
+//            await roleManager.CreateAsync(new IdentityRole(roleName));
+//        }
+//    }
+//}

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Webshop.Domain.Entities;
 using Webshop.Domain.Enums;
 
-namespace Webshop.Infrastructure.Configurations;
+namespace Webshop.Infrastructure.SQL.Configurations;
 
 public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Webshop.Domain.Entities;
 
-namespace Webshop.Infrastructure.Configurations
+namespace Webshop.Infrastructure.SQL.Configurations
 {
     public class OrderProductConfiguration : IEntityTypeConfiguration<OrderProduct>
     {

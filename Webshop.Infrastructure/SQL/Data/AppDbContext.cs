@@ -1,9 +1,9 @@
 ﻿using Webshop.Domain.Entities;
-using Webshop.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Webshop.Infrastructure.SQL.Configurations;
 
-namespace Fullstack.Persistance.Data;
+namespace Webshop.Infrastructure.SQL.Data;
 
 public class AppDbContext : IdentityDbContext<ApplicationUser>
 {

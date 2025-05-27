@@ -2,6 +2,7 @@
 @inject OrderService OrderService
 @inject NavigationManager NavigationManager
 @inject CustomAuthStateProvider AuthStateProvider
+@inject ProductService ProductService
 
 @if(Role == "Admin")
 {
@@ -101,9 +102,32 @@ else
         StateHasChanged();
     }
 
-    private void ToggleOrder(int orderId)
+    private async Task ToggleOrder(int orderId)
     {
         OrderModel tmpOrder = OrderHistory!.First(f => f.Id == orderId);
+        if (!tmpOrder.ProductsLoaded)
+        {
+            GetProductsByIdsRequest request = new()
+            {
+                ProductsIds = tmpOrder.Products.Select(p => p.ProductId).ToList()
+            };
+            var products = await ProductService.GetByIdsAsync(request);
+
+            if (products != null)
+            {
+                foreach (var orderProduct in tmpOrder.Products)
+                {
+                    var matchedProduct = products.FirstOrDefault(p => p.Id == orderProduct.ProductId);
+                    if (matchedProduct != null)
+                    {
+                        orderProduct.ProductName = matchedProduct.Name;
+                    }
+                }
+
+                tmpOrder.ProductsLoaded = true;
+            }
+
+        }
         tmpOrder.ShowDetails = !tmpOrder.ShowDetails;
     }
 }

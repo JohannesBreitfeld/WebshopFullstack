@@ -4,6 +4,7 @@
 @using Webshop.Presentation.Mapping
 @inject CustomAuthStateProvider AuthStateProvider
 @inject OrderService OrderService
+@inject ProductService ProductService
 
 <MudContainer>
     <MudCard>
@@ -21,7 +22,7 @@
             <MudButton Color="Color.Primary" OnClick="UpdateCustomerInfo">Spara ändringar</MudButton>
 
             <MudDivider />
-            
+
             <!-- Orderhistorik -->
             @if (OrderHistory is null)
             {
@@ -56,7 +57,7 @@
                                             </CardHeaderContent>
                                         </MudCardHeader>
                                         <MudCardContent Class="pa-0">
-                                            <MudTable Items="@context.Products" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                            <MudTable Items="@context.Products" Context="ProductsContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="4">
                                                 <ColGroup>
                                                     <col />
                                                     <col />
@@ -142,9 +143,32 @@
         OrderHistory = await OrderService.GetOrderByCustomerId(UserId);
     }
 
-    private void ShowBtnPress(int nr)
+    private async Task ShowBtnPress(int nr)
     {
-        OrderModel tmpOrder = OrderHistory.First(f => f.Id == nr);
+        OrderModel tmpOrder = OrderHistory!.First(f => f.Id == nr);
+        if (!tmpOrder.ProductsLoaded)
+        {
+            GetProductsByIdsRequest request = new()
+            {
+                ProductsIds = tmpOrder.Products.Select(p => p.ProductId).ToList()
+            };
+            var products = await ProductService.GetByIdsAsync(request);
+            
+            if (products != null)
+            {
+                foreach (var orderProduct in tmpOrder.Products)
+                {
+                    var matchedProduct = products.FirstOrDefault(p => p.Id == orderProduct.ProductId);
+                    if (matchedProduct != null)
+                    {
+                        orderProduct.ProductName = matchedProduct.Name;
+                    }
+                }
+
+                tmpOrder.ProductsLoaded = true; 
+            }
+
+        }
         tmpOrder.ShowDetails = !tmpOrder.ShowDetails;
     }
 }
